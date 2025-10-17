@@ -1,5 +1,7 @@
 {
+  "buildCommand": "echo 'Using pre-built dist folder'",
   "outputDirectory": "dist",
+  "installCommand": "echo 'No install needed'",
   "functions": {
     "api/**/*.js": {
       "runtime": "nodejs18.x"
