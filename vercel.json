@@ -1,8 +1,5 @@
 {
-  "framework": "vite",
   "outputDirectory": "dist",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm run build",
   "functions": {
     "api/**/*.js": {
       "runtime": "nodejs18.x"
