@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button.jsx';
 import { Card } from '@/components/ui/card.jsx';
 import PropertyForm from './components/PropertyForm';
@@ -7,6 +7,8 @@ import Subscriptions from './pages/Subscriptions';
 import Referrals from './pages/Referrals';
 import MarketStudy from './market/MarketStudy';
 import MapView from './map/MapView';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
 import { calculatePropertyValue } from './lib/aiEngine';
 import { evaluateWithGPT, API_CONFIG, getHistoryStats, clearHistory } from './lib/apiConfig';
 import useRefCapture from './hooks/useRefCapture';
@@ -14,7 +16,7 @@ import {
   Building2, Sparkles, Settings, RotateCcw, 
   Brain, Zap, TrendingUp, CheckCircle2,
   Github, Mail, AlertCircle, Home, CreditCard,
-  Users, BarChart3, MessageSquare
+  Users, BarChart3, MessageSquare, Map, LayoutDashboard, LogIn
 } from 'lucide-react';
 import './App.css';
 
@@ -28,6 +30,17 @@ function App() {
   const [error, setError] = useState(null);
   const [useGPT, setUseGPT] = useState(API_CONFIG.enabled);
   const [showSettings, setShowSettings] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
+
+  // التحقق من حالة تسجيل الدخول عند تحميل التطبيق
+  useEffect(() => {
+    const user = localStorage.getItem('muthammen_user');
+    if (user) {
+      setIsLoggedIn(true);
+      setUserData(JSON.parse(user));
+    }
+  }, []);
 
   const handleEvaluate = async (formData) => {
     setIsLoading(true);
@@ -89,11 +102,38 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // معالج تسجيل الدخول
+  const handleLoginSuccess = (user) => {
+    setIsLoggedIn(true);
+    setUserData(user);
+    setCurrentPage('dashboard');
+  };
+
+  // معالج تسجيل الخروج
+  const handleLogout = () => {
+    localStorage.removeItem('muthammen_user');
+    setIsLoggedIn(false);
+    setUserData(null);
+    setCurrentPage('home');
+  };
+
   // عرض الصفحة المطلوبة
+  if (currentPage === 'login') {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  if (currentPage === 'dashboard') {
+    if (!isLoggedIn) {
+      setCurrentPage('login');
+      return null;
+    }
+    return <Dashboard onLogout={handleLogout} navigateTo={navigateTo} />;
+  }
+
   if (currentPage === 'subscriptions') {
     return (
       <>
-        <Header currentPage={currentPage} navigateTo={navigateTo} />
+        <Header currentPage={currentPage} navigateTo={navigateTo} isLoggedIn={isLoggedIn} />
         <Subscriptions />
         <Footer />
       </>
@@ -103,7 +143,7 @@ function App() {
   if (currentPage === 'referrals') {
     return (
       <>
-        <Header currentPage={currentPage} navigateTo={navigateTo} />
+        <Header currentPage={currentPage} navigateTo={navigateTo} isLoggedIn={isLoggedIn} />
         <Referrals />
         <Footer />
       </>
@@ -113,7 +153,7 @@ function App() {
   if (currentPage === 'market') {
     return (
       <>
-        <Header currentPage={currentPage} navigateTo={navigateTo} />
+        <Header currentPage={currentPage} navigateTo={navigateTo} isLoggedIn={isLoggedIn} />
         <MarketStudy />
         <Footer />
       </>
@@ -123,17 +163,125 @@ function App() {
   if (currentPage === 'map') {
     return (
       <>
-        <Header currentPage={currentPage} navigateTo={navigateTo} />
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold mb-2">خريطة الأسعار التفاعلية</h1>
-            <p className="text-muted-foreground">
-              استكشف أسعار العقارات في مختلف أنحاء المملكة بشكل تفاعلي
+        <Header currentPage={currentPage} navigateTo={navigateTo} isLoggedIn={isLoggedIn} />
+        <div className="container mx-auto px-4 py-12">
+          {/* Hero Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-100 text-yellow-800 text-sm font-semibold mb-4">
+              <Map className="w-4 h-4" />
+              <span>قريبًا</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black mb-4">
+              خريطة الوعي العقاري الأولى في المملكة 🇺🇦
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              استكشف الأسعار، الاتجاهات، والفرص في كل حي بتفاصيل غير مسبوقة
             </p>
           </div>
-          <div className="h-[600px] rounded-lg overflow-hidden shadow-lg">
-            <MapView />
+
+          {/* ميزات الخريطة */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <Card className="p-6">
+              <div className="p-3 rounded-xl bg-blue-100 w-fit mb-4">
+                <Map className="w-6 h-6 text-blue-600" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">خريطة تفاعلية للرياض</h3>
+              <p className="text-sm text-muted-foreground">
+                عرض جميع الأحياء مع معلومات تفصيلية عن الأسعار والمرافق
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="p-3 rounded-xl bg-green-100 w-fit mb-4">
+                <TrendingUp className="w-6 h-6 text-green-600" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">اتجاهات الأسعار</h3>
+              <p className="text-sm text-muted-foreground">
+                تتبع تغيرات الأسعار عبر الزمن واكتشف الفرص الاستثمارية
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="p-3 rounded-xl bg-purple-100 w-fit mb-4">
+                <BarChart3 className="w-6 h-6 text-purple-600" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">إحصائيات تفصيلية</h3>
+              <p className="text-sm text-muted-foreground">
+                متوسط الأسعار، عدد العقارات، ومعدل النمو لكل حي
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="p-3 rounded-xl bg-orange-100 w-fit mb-4">
+                <AlertCircle className="w-6 h-6 text-orange-600" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">فلترة متقدمة</h3>
+              <p className="text-sm text-muted-foreground">
+                فلتر حسب نوع العقار، النطاق السعري، والمنطقة
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="p-3 rounded-xl bg-pink-100 w-fit mb-4">
+                <CheckCircle2 className="w-6 h-6 text-pink-600" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">مقارنة الأحياء</h3>
+              <p className="text-sm text-muted-foreground">
+                قارن بين الأحياء لاتخاذ قرار مستنير
+              </p>
+            </Card>
+
+            <Card className="p-6">
+              <div className="p-3 rounded-xl bg-cyan-100 w-fit mb-4">
+                <Brain className="w-6 h-6 text-cyan-600" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">توصيات ذكية</h3>
+              <p className="text-sm text-muted-foreground">
+                اقتراحات مخصصة بناءً على احتياجاتك وميزانيتك
+              </p>
+            </Card>
           </div>
+
+          {/* لماذا الخريطة؟ */}
+          <Card className="p-8 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200">
+            <h2 className="text-2xl font-bold mb-4 text-center">لماذا خريطة مُثمّن؟</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h3 className="font-bold mb-2">📍 فهم أعمق للسوق</h3>
+                <p className="text-sm text-muted-foreground">
+                  الخريطة تعطيك نظرة شاملة على السوق العقاري في الرياض، مما يساعدك على فهم الاتجاهات والفرص.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-bold mb-2">📊 قرارات مستنيرة</h3>
+                <p className="text-sm text-muted-foreground">
+                  باستخدام بيانات دقيقة وتحليلات متقدمة، يمكنك اتخاذ قرارات شراء أو استثمار أفضل.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-bold mb-2">⏱️ توفير الوقت</h3>
+                <p className="text-sm text-muted-foreground">
+                  بدلاً من البحث في مواقع متعددة، احصل على جميع المعلومات في مكان واحد.
+                </p>
+              </div>
+              <div>
+                <h3 className="font-bold mb-2">🔍 شفافية كاملة</h3>
+                <p className="text-sm text-muted-foreground">
+                  بيانات حقيقية ومحدثة باستمرار لضمان أعلى مستوى من الدقة.
+                </p>
+              </div>
+            </div>
+            <div className="text-center">
+              <Button 
+                size="lg" 
+                className="gap-2"
+                onClick={() => navigateTo('home')}
+              >
+                <Sparkles className="w-5 h-5" />
+                ابدأ بالتقييم الآن
+              </Button>
+            </div>
+          </Card>
         </div>
         <Footer />
       </>
@@ -144,7 +292,7 @@ function App() {
   return (
     <div className="app-container min-h-screen">
       {/* الهيدر */}
-      <Header currentPage={currentPage} navigateTo={navigateTo} showSettings={showSettings} setShowSettings={setShowSettings} />
+      <Header currentPage={currentPage} navigateTo={navigateTo} showSettings={showSettings} setShowSettings={setShowSettings} isLoggedIn={isLoggedIn} />
 
       {/* لوحة الإعدادات */}
       {showSettings && (
@@ -381,13 +529,21 @@ function App() {
 }
 
 // مكون الهيدر
-function Header({ currentPage, navigateTo, showSettings, setShowSettings }) {
+function Header({ currentPage, navigateTo, showSettings, setShowSettings, isLoggedIn }) {
   const navItems = [
     { id: 'home', label: 'التقييم', icon: Home },
+    { id: 'map', label: 'الخريطة', icon: Map },
     { id: 'market', label: 'دراسة السوق', icon: BarChart3 },
     { id: 'subscriptions', label: 'الباقات', icon: CreditCard },
     { id: 'referrals', label: 'الإحالات', icon: Users }
   ];
+
+  // إضافة لوحة التحكم إذا كان المستخدم مسجل
+  if (isLoggedIn) {
+    navItems.push({ id: 'dashboard', label: 'لوحة التحكم', icon: LayoutDashboard });
+  } else {
+    navItems.push({ id: 'login', label: 'تسجيل الدخول', icon: LogIn });
+  }
 
   return (
     <header className="border-b border-border/50 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
