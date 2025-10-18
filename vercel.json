@@ -1,7 +1,7 @@
 {
-  "buildCommand": "echo 'Using pre-built dist folder'",
+  "buildCommand": "pnpm install && pnpm run build",
   "outputDirectory": "dist",
-  "installCommand": "echo 'No install needed'",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "functions": {
     "api/**/*.js": {
       "runtime": "nodejs18.x"
