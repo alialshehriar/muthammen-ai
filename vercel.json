@@ -1,17 +1,15 @@
 {
-  "version": 2,
-  "buildCommand": "pnpm run build",
+  "buildCommand": "pnpm install && pnpm run build",
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "functions": {
     "api/**/*.js": {
       "runtime": "nodejs20.x"
     }
-  },
-  "env": {
-    "NODE_ENV": "production"
   }
 }
+
