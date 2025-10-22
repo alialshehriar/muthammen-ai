@@ -7,6 +7,8 @@ import Subscriptions from './pages/Subscriptions';
 import Referrals from './pages/Referrals';
 import MarketStudy from './market/MarketStudy';
 import MapView from './map/MapView';
+import WaitlistMap from './pages/WaitlistMap';
+import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import { calculatePropertyValue } from './lib/aiEngine';
@@ -130,6 +132,10 @@ function App() {
     return <Dashboard onLogout={handleLogout} navigateTo={navigateTo} />;
   }
 
+  if (currentPage === 'admin') {
+    return <Admin onLogout={() => navigateTo('home')} />;
+  }
+
   if (currentPage === 'subscriptions') {
     return (
       <>
@@ -161,6 +167,16 @@ function App() {
   }
 
   if (currentPage === 'map') {
+    return (
+      <>
+        <Header currentPage={currentPage} navigateTo={navigateTo} isLoggedIn={isLoggedIn} />
+        <WaitlistMap navigateTo={navigateTo} />
+        <Footer />
+      </>
+    );
+  }
+
+  if (currentPage === 'map-old') {
     return (
       <>
         <Header currentPage={currentPage} navigateTo={navigateTo} isLoggedIn={isLoggedIn} />
