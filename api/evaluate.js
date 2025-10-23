@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { query } from './db.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -173,6 +174,15 @@ ${formData.notes ? `### ملاحظات إضافية:\n${formData.notes}` : ''}
 
     // Parse the AI response to extract structured data
     const evaluation = parseAIResponse(aiResponse, formData);
+
+    // Save evaluation to database
+    try {
+      await saveEvaluationToDatabase(formData, evaluation);
+      console.log('✅ Evaluation saved to database');
+    } catch (dbError) {
+      console.error('❌ Failed to save evaluation to database:', dbError);
+      // Continue anyway - don't fail the request if DB save fails
+    }
 
     // Return the result
     return res.status(200).json(evaluation);
@@ -349,5 +359,83 @@ function extractMarketTrend(text) {
     return 'مستقر';
   }
   return 'مستقر';
+}
+
+async function saveEvaluationToDatabase(formData, evaluation) {
+  const sql = `
+    INSERT INTO evaluations (
+      city, district, property_type, area, built_area, age, condition,
+      floors, bedrooms, bathrooms, living_rooms, majlis,
+      finishing_type, view_type, direction, street_width, street_type,
+      facades_count, is_corner,
+      distance_to_services, distance_to_schools, distance_to_hospitals,
+      distance_to_malls, public_transport,
+      has_parking, parking_spaces, has_elevator, has_pool, has_garden,
+      has_maid_room, has_driver_room, has_storage, has_ac, has_kitchen,
+      estimated_value, min_value, max_value, confidence,
+      analysis, recommendations,
+      source, used_agent
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7,
+      $8, $9, $10, $11, $12,
+      $13, $14, $15, $16, $17,
+      $18, $19,
+      $20, $21, $22, $23, $24,
+      $25, $26, $27, $28, $29,
+      $30, $31, $32, $33, $34,
+      $35, $36, $37, $38,
+      $39, $40,
+      $41, $42
+    )
+    RETURNING id
+  `;
+
+  const values = [
+    formData.city,
+    formData.district,
+    formData.propertyType,
+    parseFloat(formData.area) || null,
+    parseFloat(formData.builtArea) || null,
+    formData.age,
+    formData.condition,
+    parseInt(formData.floors) || null,
+    parseInt(formData.bedrooms) || null,
+    parseInt(formData.bathrooms) || null,
+    parseInt(formData.livingRooms) || null,
+    parseInt(formData.majlis) || null,
+    formData.finishingType,
+    formData.viewType,
+    formData.direction,
+    formData.streetWidth,
+    formData.streetType,
+    parseInt(formData.facadesCount) || null,
+    formData.isCorner === 'true' || formData.isCorner === true,
+    formData.distanceToServices,
+    formData.distanceToSchools,
+    formData.distanceToHospitals,
+    formData.distanceToMalls,
+    formData.publicTransport,
+    formData.parking === 'true' || formData.parking === true,
+    parseInt(formData.parkingSpaces) || null,
+    formData.elevator === 'true' || formData.elevator === true,
+    formData.pool === 'true' || formData.pool === true,
+    formData.garden === 'true' || formData.garden === true,
+    formData.maidRoom === 'true' || formData.maidRoom === true,
+    formData.driverRoom === 'true' || formData.driverRoom === true,
+    formData.storage === 'true' || formData.storage === true,
+    formData.ac === 'true' || formData.ac === true,
+    formData.kitchen === 'true' || formData.kitchen === true,
+    evaluation.estimatedValue,
+    evaluation.priceRange.min,
+    evaluation.priceRange.max,
+    evaluation.confidence,
+    JSON.stringify(evaluation.analysis),
+    JSON.stringify(evaluation.recommendations),
+    evaluation.source,
+    evaluation.usedAgent
+  ];
+
+  const result = await query(sql, values);
+  return result.rows[0];
 }
 
