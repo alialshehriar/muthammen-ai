@@ -87,10 +87,15 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
   });
 
   const handleChange = (name, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    console.log(`📝 Field changed: ${name} = ${value}`);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [name]: value
+      };
+      console.log('📄 Updated formData:', newData);
+      return newData;
+    });
   };
 
   const handleSubmit = (e) => {
