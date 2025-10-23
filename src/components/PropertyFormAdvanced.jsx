@@ -16,8 +16,20 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
   // دالة لتحديث البيانات
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
-    console.log(`🔄 تحديث حقل: ${name} = ${newValue}`);
+    let newValue;
+    
+    // Handle different input types
+    if (type === 'checkbox') {
+      newValue = checked;
+    } else if (type === 'number') {
+      // Convert to number, or keep empty string if invalid
+      newValue = value === '' ? '' : Number(value);
+    } else {
+      newValue = value;
+    }
+    
+    console.log(`🔄 تحديث حقل: ${name} = ${newValue} (type: ${type})`);
+    
     setFormData(prev => {
       const updated = {
         ...prev,
