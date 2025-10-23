@@ -44,6 +44,30 @@ function App() {
     }
   }, []);
 
+  // قراءة URL وتحديد الصفحة المناسبة
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/admin') {
+      setCurrentPage('admin');
+    } else if (path === '/subscriptions') {
+      setCurrentPage('subscriptions');
+    } else if (path === '/referrals') {
+      setCurrentPage('referrals');
+    } else if (path === '/market') {
+      setCurrentPage('market');
+    } else if (path === '/map') {
+      setCurrentPage('map');
+    } else if (path === '/waitlist') {
+      setCurrentPage('waitlist');
+    } else if (path === '/login') {
+      setCurrentPage('login');
+    } else if (path === '/dashboard') {
+      setCurrentPage('dashboard');
+    } else {
+      setCurrentPage('home');
+    }
+  }, []);
+
   const handleEvaluate = async (formData) => {
     setIsLoading(true);
     setError(null);
