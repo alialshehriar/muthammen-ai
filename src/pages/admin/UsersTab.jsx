@@ -21,14 +21,50 @@ const UsersTab = ({ loading }) => {
   const loadUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/admin/accounts');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setUsers(data.data.accounts || []);
-          setUserStats(data.data.stats || null);
+      // Fetch both waitlist and users
+      const [waitlistRes, usersRes] = await Promise.all([
+        fetch('/api/admin/waitlist'),
+        fetch('/api/admin/users')
+      ]);
+
+      const allAccounts = [];
+      let stats = {
+        overview: { total_waitlist: 0, total_users: 0 }
+      };
+
+      // Process waitlist data
+      if (waitlistRes.ok) {
+        const waitlistData = await waitlistRes.json();
+        if (waitlistData.success) {
+          const waitlistAccounts = (waitlistData.data?.entries || []).map(entry => ({
+            ...entry,
+            account_type: 'waitlist',
+            status: 'active',
+            total_evaluations: 0,
+            total_referrals: entry.referrals_count || 0,
+            total_points: 0,
+            last_login: null
+          }));
+          allAccounts.push(...waitlistAccounts);
+          stats.overview.total_waitlist = waitlistAccounts.length;
         }
       }
+
+      // Process users data
+      if (usersRes.ok) {
+        const usersData = await usersRes.json();
+        if (usersData.success) {
+          const userAccounts = (usersData.data?.users || []).map(user => ({
+            ...user,
+            account_type: 'user'
+          }));
+          allAccounts.push(...userAccounts);
+          stats.overview.total_users = userAccounts.length;
+        }
+      }
+
+      setUsers(allAccounts);
+      setUserStats(stats);
     } catch (error) {
       console.error('Error loading accounts:', error);
     } finally {
