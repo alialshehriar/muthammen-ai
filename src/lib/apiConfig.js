@@ -20,7 +20,7 @@
  */
 export const API_CONFIG = {
   // ضع API Key هنا (أو اتركه فارغاً لاستخدام المحرك المحلي)
-  apiKey: '', // مثال: 'sk-proj-xxxxxxxxxxxxx'
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY || '', // مثال: 'sk-proj-xxxxxxxxxxxxx'
   
   // رابط API (يمكن تغييره حسب الخدمة)
   apiEndpoint: 'https://api.openai.com/v1/chat/completions',
