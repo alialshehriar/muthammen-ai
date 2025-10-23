@@ -28,8 +28,18 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
     console.log('📤 إرسال بيانات النموذج المتقدم:', formData);
     
     // Validation
-    if (!formData.area || !formData.city) {
-      alert('يرجى إدخال المساحة والمدينة على الأقل');
+    if (!formData.city) {
+      alert('يرجى اختيار المدينة');
+      return;
+    }
+    
+    if (!formData.propertyType) {
+      alert('يرجى اختيار نوع العقار');
+      return;
+    }
+    
+    if (!formData.area) {
+      alert('يرجى إدخال مساحة الأرض');
       return;
     }
     
