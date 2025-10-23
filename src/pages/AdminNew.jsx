@@ -4,6 +4,7 @@ import WaitlistTab from './admin/WaitlistTab.jsx';
 import ReferralsTab from './admin/ReferralsTab.jsx';
 import AIMonitorTab from './admin/AIMonitorTab.jsx';
 import EventsTab from './admin/EventsTab.jsx';
+import UsersTab from './admin/UsersTab.jsx';
 import SettingsTab from './admin/SettingsTab.jsx';
 import { Card } from '@/components/ui/card.jsx';
 import { Button } from '@/components/ui/button.jsx';
@@ -403,7 +404,7 @@ const AdminNew = ({ onLogout }) => {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-7 h-auto p-1">
             <TabsTrigger value="overview" className="gap-2">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">نظرة عامة</span>
@@ -423,6 +424,10 @@ const AdminNew = ({ onLogout }) => {
             <TabsTrigger value="events" className="gap-2">
               <Activity className="w-4 h-4" />
               <span className="hidden sm:inline">الأحداث</span>
+            </TabsTrigger>
+            <TabsTrigger value="users" className="gap-2">
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">المستخدمين</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="w-4 h-4" />
@@ -497,6 +502,13 @@ const AdminNew = ({ onLogout }) => {
               events={events}
               eventStats={eventStats}
               dailyActivity={dailyActivity}
+              loading={loading}
+            />
+          </TabsContent>
+
+          {/* المستخدمين - Users */}
+          <TabsContent value="users" className="space-y-6">
+            <UsersTab 
               loading={loading}
             />
           </TabsContent>
