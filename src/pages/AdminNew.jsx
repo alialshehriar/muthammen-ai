@@ -3,6 +3,7 @@ import OverviewTab from './admin/OverviewTab.jsx';
 import WaitlistTab from './admin/WaitlistTab.jsx';
 import ReferralsTab from './admin/ReferralsTab.jsx';
 import AIMonitorTab from './admin/AIMonitorTab.jsx';
+import EventsTab from './admin/EventsTab.jsx';
 import SettingsTab from './admin/SettingsTab.jsx';
 import { Card } from '@/components/ui/card.jsx';
 import { Button } from '@/components/ui/button.jsx';
@@ -34,6 +35,9 @@ const AdminNew = ({ onLogout }) => {
   const [agentStats, setAgentStats] = useState(null);
   const [evaluations, setEvaluations] = useState([]);
   const [evaluationsPagination, setEvaluationsPagination] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [eventStats, setEventStats] = useState([]);
+  const [dailyActivity, setDailyActivity] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [cityFilter, setCityFilter] = useState('');
   const [rewardFilter, setRewardFilter] = useState('');
@@ -79,7 +83,8 @@ const AdminNew = ({ onLogout }) => {
         loadStats(),
         loadWaitlist(),
         loadAgentLogs(),
-        loadEvaluations()
+        loadEvaluations(),
+        loadEvents()
       ]);
     } catch (err) {
       console.error('Error loading data:', err);
@@ -140,6 +145,23 @@ const AdminNew = ({ onLogout }) => {
       }
     } catch (err) {
       console.error('Error loading waitlist:', err);
+    }
+  };
+
+  // تحميل الأحداث
+  const loadEvents = async () => {
+    try {
+      const response = await fetch('/api/admin/events?limit=100');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setEvents(data.data.events || []);
+          setEventStats(data.data.stats || []);
+          setDailyActivity(data.data.dailyActivity || []);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading events:', err);
     }
   };
 
@@ -381,7 +403,7 @@ const AdminNew = ({ onLogout }) => {
 
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-6 h-auto p-1">
             <TabsTrigger value="overview" className="gap-2">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">نظرة عامة</span>
@@ -397,6 +419,10 @@ const AdminNew = ({ onLogout }) => {
             <TabsTrigger value="ai" className="gap-2">
               <Brain className="w-4 h-4" />
               <span className="hidden sm:inline">مراقبة الذكاء</span>
+            </TabsTrigger>
+            <TabsTrigger value="events" className="gap-2">
+              <Activity className="w-4 h-4" />
+              <span className="hidden sm:inline">الأحداث</span>
             </TabsTrigger>
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="w-4 h-4" />
@@ -461,6 +487,16 @@ const AdminNew = ({ onLogout }) => {
               evaluationsPagination={evaluationsPagination}
               testAgent={testAgent}
               refreshing={refreshing}
+              loading={loading}
+            />
+          </TabsContent>
+
+          {/* الأحداث - Events */}
+          <TabsContent value="events" className="space-y-6">
+            <EventsTab 
+              events={events}
+              eventStats={eventStats}
+              dailyActivity={dailyActivity}
               loading={loading}
             />
           </TabsContent>

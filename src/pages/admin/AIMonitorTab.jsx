@@ -199,13 +199,17 @@ const AIMonitorTab = ({ agentLogs, agentStats, evaluations, evaluationsPaginatio
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
+                <tr className="border-b bg-gray-50">
                   <th className="text-right p-3 font-bold">ID</th>
                   <th className="text-right p-3 font-bold">المدينة</th>
                   <th className="text-right p-3 font-bold">الحي</th>
-                  <th className="text-right p-3 font-bold">النوع</th>
-                  <th className="text-right p-3 font-bold">المساحة</th>
+                  <th className="text-right p-3 font-bold">نوع العقار</th>
+                  <th className="text-right p-3 font-bold">المساحة الكلية</th>
+                  <th className="text-right p-3 font-bold">المساحة المبنية</th>
+                  <th className="text-right p-3 font-bold">عمر العقار</th>
+                  <th className="text-right p-3 font-bold">الحالة</th>
                   <th className="text-right p-3 font-bold">القيمة المقدرة</th>
+                  <th className="text-right p-3 font-bold">النطاق</th>
                   <th className="text-right p-3 font-bold">الثقة</th>
                   <th className="text-right p-3 font-bold">المصدر</th>
                   <th className="text-right p-3 font-bold">التاريخ</th>
@@ -214,13 +218,39 @@ const AIMonitorTab = ({ agentLogs, agentStats, evaluations, evaluationsPaginatio
               <tbody>
                 {evaluations.map((evaluation) => (
                   <tr key={evaluation.id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">{evaluation.id}</td>
-                    <td className="p-3">{evaluation.city}</td>
+                    <td className="p-3 font-mono text-sm">{evaluation.id}</td>
+                    <td className="p-3 font-semibold">{evaluation.city}</td>
                     <td className="p-3">{evaluation.district || '-'}</td>
-                    <td className="p-3">{evaluation.property_type}</td>
-                    <td className="p-3">{evaluation.area} م²</td>
-                    <td className="p-3 font-bold">{parseFloat(evaluation.estimated_value).toLocaleString('ar-SA')} ريال</td>
-                    <td className="p-3">{evaluation.confidence}%</td>
+                    <td className="p-3">
+                      <span className="px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-700">
+                        {evaluation.property_type}
+                      </span>
+                    </td>
+                    <td className="p-3">{evaluation.area ? `${evaluation.area} م²` : '-'}</td>
+                    <td className="p-3">{evaluation.built_area ? `${evaluation.built_area} م²` : '-'}</td>
+                    <td className="p-3">{evaluation.age || '-'}</td>
+                    <td className="p-3">{evaluation.condition || '-'}</td>
+                    <td className="p-3 font-bold text-green-700">
+                      {parseFloat(evaluation.estimated_value).toLocaleString('ar-SA')} ريال
+                    </td>
+                    <td className="p-3 text-xs text-gray-600">
+                      {evaluation.min_value && evaluation.max_value ? (
+                        <div>
+                          <div>{parseFloat(evaluation.min_value).toLocaleString('ar-SA')}</div>
+                          <div>-</div>
+                          <div>{parseFloat(evaluation.max_value).toLocaleString('ar-SA')}</div>
+                        </div>
+                      ) : '-'}
+                    </td>
+                    <td className="p-3">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        evaluation.confidence >= 80 ? 'bg-green-100 text-green-700' :
+                        evaluation.confidence >= 60 ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {evaluation.confidence}%
+                      </span>
+                    </td>
                     <td className="p-3">
                       <span className={`px-2 py-1 rounded text-xs ${
                         evaluation.used_agent ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
@@ -228,7 +258,13 @@ const AIMonitorTab = ({ agentLogs, agentStats, evaluations, evaluationsPaginatio
                         {evaluation.used_agent ? 'AI' : 'تقليدي'}
                       </span>
                     </td>
-                    <td className="p-3 text-sm">{new Date(evaluation.created_at).toLocaleDateString('ar-SA')}</td>
+                    <td className="p-3 text-sm whitespace-nowrap">
+                      {new Date(evaluation.created_at).toLocaleDateString('ar-SA', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </td>
                   </tr>
                 ))}
               </tbody>
