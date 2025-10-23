@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { ADVANCED_SYSTEM_PROMPT, ADVANCED_USER_PROMPT_TEMPLATE } from './advanced_prompt.js';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -35,18 +34,130 @@ export default async function handler(req, res) {
       });
     }
 
-    // Create user prompt from template
-    const userPrompt = ADVANCED_USER_PROMPT_TEMPLATE(formData);
+    // Build comprehensive prompt
+    const systemPrompt = `أنت مُثمّن - خبير تقييم عقاري معتمد متخصص في السوق السعودي.
 
-    console.log('🤖 Calling OpenAI API with advanced prompt...');
+مهمتك: تقديم تقييم عقاري دقيق وشامل ومفصل يتضمن:
 
-    // Call OpenAI API with advanced prompt
+1. **القيمة التقديرية** للعقار بالريال السعودي
+2. **نطاق السعر** (الحد الأدنى والأعلى)
+3. **مستوى الثقة** في التقييم (%)
+4. **تحليل شامل** يتضمن:
+   - ملخص التقييم
+   - العوامل الرئيسية المؤثرة (5-7 عوامل)
+   - نقاط القوة (5-7 نقاط)
+   - نقاط الضعف (3-5 نقاط)
+   - الفرص المستقبلية (3-5 نقاط)
+   - التهديدات المحتملة (2-4 نقاط)
+   - اتجاه السوق (صاعد/مستقر/هابط)
+5. **التوصيات العملية** (5-7 توصيات)
+6. **التعديلات المطبقة** مع النسب المئوية
+
+**مهم جداً**:
+- استخدم أرقام محددة ودقيقة
+- قدم أمثلة واقعية من السوق
+- اشرح كل خطوة في التقييم
+- اذكر المصادر والبيانات الداعمة
+- كن شاملاً ومفصلاً (1000-1500 كلمة)
+
+**بيانات السوق السعودي 2025**:
+- الرياض: متوسط سعر المتر 7000-9000 ريال (حسب الحي)
+- جدة: متوسط سعر المتر 6000-8000 ريال
+- الدمام/الخبر: متوسط سعر المتر 5000-7000 ريال
+- النمو السنوي: 5-8% في المناطق الحيوية
+- تأثير رؤية 2030: إيجابي جداً على المناطق القريبة من المشاريع الكبرى
+
+**صيغة الرد**:
+قدم ردك بصيغة منظمة تحتوي على الأقسام التالية:
+
+## القيمة التقديرية
+[القيمة بالريال]
+
+## نطاق السعر
+الحد الأدنى: [القيمة]
+الحد الأعلى: [القيمة]
+
+## مستوى الثقة
+[النسبة المئوية]%
+
+## ملخص التقييم
+[ملخص شامل 200-300 كلمة]
+
+## العوامل الرئيسية المؤثرة
+1. [العامل الأول]: [التأثير] - [الوصف]
+2. [العامل الثاني]: [التأثير] - [الوصف]
+...
+
+## نقاط القوة
+- [نقطة القوة الأولى مع التفاصيل]
+- [نقطة القوة الثانية مع التفاصيل]
+...
+
+## نقاط الضعف
+- [نقطة الضعف الأولى مع التفاصيل]
+- [نقطة الضعف الثانية مع التفاصيل]
+...
+
+## الفرص المستقبلية
+- [الفرصة الأولى مع التفاصيل]
+- [الفرصة الثانية مع التفاصيل]
+...
+
+## التهديدات المحتملة
+- [التهديد الأول مع التفاصيل]
+- [التهديد الثاني مع التفاصيل]
+...
+
+## اتجاه السوق
+[صاعد/مستقر/هابط] - [التفسير]
+
+## التوصيات
+1. [التوصية الأولى مع التفاصيل]
+2. [التوصية الثانية مع التفاصيل]
+...`;
+
+    const userPrompt = `أريد تقييماً عقارياً شاملاً ومفصلاً للعقار التالي:
+
+### المعلومات الأساسية:
+- **المدينة**: ${formData.city}
+- **الحي**: ${formData.district || 'غير محدد'}
+- **نوع العقار**: ${formData.propertyType || 'غير محدد'}
+- **مساحة الأرض**: ${formData.area} م²
+- **مساحة البناء**: ${formData.builtArea || 'غير محدد'} م²
+- **عمر العقار**: ${formData.age || 'غير محدد'}
+- **حالة العقار**: ${formData.condition || 'غير محدد'}
+
+### التفاصيل الإضافية:
+${formData.floors ? `- **عدد الطوابق**: ${formData.floors}` : ''}
+${formData.bedrooms ? `- **عدد الغرف**: ${formData.bedrooms}` : ''}
+${formData.bathrooms ? `- **عدد الحمامات**: ${formData.bathrooms}` : ''}
+${formData.finishing ? `- **نوع التشطيب**: ${formData.finishing}` : ''}
+${formData.view ? `- **الإطلالة**: ${formData.view}` : ''}
+${formData.direction ? `- **الاتجاه**: ${formData.direction}` : ''}
+${formData.streetWidth ? `- **عرض الشارع**: ${formData.streetWidth}` : ''}
+${formData.parking ? `- **مواقف السيارات**: ${formData.parking}` : ''}
+
+### المرافق:
+${formData.elevator ? '- يوجد مصعد' : ''}
+${formData.pool ? '- يوجد حمام سباحة' : ''}
+${formData.garden ? '- يوجد حديقة' : ''}
+${formData.maidRoom ? '- يوجد غرفة خادمة' : ''}
+
+${formData.notes ? `### ملاحظات إضافية:\n${formData.notes}` : ''}
+
+---
+
+قدم تقييماً شاملاً ومفصلاً باللغة العربية.`;
+
+    console.log('🤖 Calling OpenAI API...');
+
+    // Call OpenAI API
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         {
           role: 'system',
-          content: ADVANCED_SYSTEM_PROMPT
+          content: systemPrompt
         },
         {
           role: 'user',
@@ -54,7 +165,7 @@ export default async function handler(req, res) {
         }
       ],
       temperature: 0.7,
-      max_tokens: 4000, // Increased for detailed response
+      max_tokens: 4000,
     });
 
     const aiResponse = completion.choices[0].message.content;
@@ -79,31 +190,29 @@ export default async function handler(req, res) {
 
 function parseAIResponse(aiResponse, formData) {
   // Extract structured data from AI response
-  const lines = aiResponse.split('\n');
   let estimatedValue = 0;
   let confidence = 85;
   let priceRange = { min: 0, max: 0 };
 
   // Try to find price mentions in the response
-  const priceRegex = /(\d{1,3}(?:,\d{3})*(?:\.\d+)?)\s*ريال/g;
+  const priceRegex = /(\d{1,3}(?:[,،]\d{3})*(?:\.\d+)?)\s*ريال/g;
   const prices = [];
   let match;
 
   while ((match = priceRegex.exec(aiResponse)) !== null) {
-    const price = parseFloat(match[1].replace(/,/g, ''));
-    if (price > 100000) {
-      // Reasonable property price
+    const priceStr = match[1].replace(/[,،]/g, '');
+    const price = parseFloat(priceStr);
+    if (price > 100000 && price < 100000000) {
       prices.push(price);
     }
   }
 
   if (prices.length > 0) {
-    // Use the first significant price as estimated value
     estimatedValue = prices[0];
     priceRange.min = Math.round(estimatedValue * 0.92);
     priceRange.max = Math.round(estimatedValue * 1.08);
   } else {
-    // Fallback calculation if no price found
+    // Fallback calculation
     const basePrice = calculateBasePrice(formData);
     estimatedValue = basePrice;
     priceRange.min = Math.round(basePrice * 0.92);
@@ -116,34 +225,39 @@ function parseAIResponse(aiResponse, formData) {
     confidence = parseInt(confidenceMatch[1]);
   }
 
-  // Extract sections from the response
-  const analysis = extractSection(aiResponse, 'تحليل');
-  const strengths = extractListItems(aiResponse, 'نقاط القوة|القوة');
-  const weaknesses = extractListItems(aiResponse, 'نقاط الضعف|الضعف');
+  // Extract sections
+  const summary = extractSection(aiResponse, 'ملخص التقييم') || aiResponse.substring(0, 500) + '...';
+  const keyFactors = extractKeyFactors(aiResponse);
+  const strengths = extractListItems(aiResponse, 'نقاط القوة');
+  const weaknesses = extractListItems(aiResponse, 'نقاط الضعف');
   const opportunities = extractListItems(aiResponse, 'الفرص');
   const threats = extractListItems(aiResponse, 'التهديدات');
   const recommendations = extractListItems(aiResponse, 'التوصيات');
+  const marketTrend = extractMarketTrend(aiResponse);
 
   return {
     estimatedValue,
     priceRange,
     confidence,
     analysis: {
-      summary: analysis || aiResponse.substring(0, 500) + '...',
-      keyFactors: extractKeyFactors(aiResponse),
-      strengths: strengths.length > 0 ? strengths : ['موقع جيد', 'مساحة مناسبة'],
+      summary,
+      keyFactors: keyFactors.length > 0 ? keyFactors : [
+        { factor: 'الموقع', impact: 'مرتفع', description: 'موقع العقار في ' + formData.city },
+        { factor: 'المساحة', impact: 'متوسط', description: 'مساحة الأرض ' + formData.area + ' م²' },
+      ],
+      strengths: strengths.length > 0 ? strengths : ['موقع ممتاز', 'مساحة مناسبة'],
       weaknesses: weaknesses.length > 0 ? weaknesses : ['يحتاج تقييم ميداني'],
       opportunities: opportunities.length > 0 ? opportunities : ['إمكانية التطوير'],
       threats: threats.length > 0 ? threats : ['تقلبات السوق'],
-      marketTrend: 'مستقر',
-      fullReport: aiResponse, // Include full AI response
+      marketTrend: marketTrend || 'مستقر',
+      fullReport: aiResponse,
     },
     recommendations: recommendations.length > 0 ? recommendations : ['يُنصح بزيارة ميدانية'],
     adjustments: {
-      appliedFactors: extractKeyFactors(aiResponse).map(f => ({
+      appliedFactors: keyFactors.slice(0, 5).map((f, i) => ({
         factor: f.factor,
         impact: f.impact,
-        percentage: 5,
+        percentage: 5 + i,
       })),
     },
     source: 'gpt-4o',
@@ -153,18 +267,16 @@ function parseAIResponse(aiResponse, formData) {
 }
 
 function calculateBasePrice(formData) {
-  // Fallback calculation based on basic data
   const cityPrices = {
     'الرياض': 8000,
-    'جدة': 7500,
+    'جدة': 7000,
     'الدمام': 6000,
-    'مكة': 9000,
-    'المدينة': 8500,
+    'الخبر': 6500,
+    'مكة المكرمة': 9000,
+    'المدينة المنورة': 8500,
     'الطائف': 6500,
     'أبها': 5500,
     'تبوك': 5000,
-    'الخبر': 7000,
-    'القطيف': 6500,
   };
 
   const pricePerSqm = cityPrices[formData.city] || 7000;
@@ -176,7 +288,7 @@ function calculateBasePrice(formData) {
 function extractSection(text, sectionName) {
   const regex = new RegExp(`##\\s*${sectionName}[^#]*?([\\s\\S]*?)(?=##|$)`, 'i');
   const match = text.match(regex);
-  return match ? match[1].trim().substring(0, 500) : null;
+  return match ? match[1].trim() : null;
 }
 
 function extractListItems(text, sectionName) {
@@ -192,47 +304,50 @@ function extractListItems(text, sectionName) {
       const trimmed = line.trim();
       if (trimmed.startsWith('-') || trimmed.startsWith('•') || trimmed.startsWith('*')) {
         const item = trimmed.substring(1).trim();
-        if (item && item.length > 10) {
+        if (item && item.length > 5) {
           items.push(item);
         }
       } else if (/^\d+\./.test(trimmed)) {
         const item = trimmed.replace(/^\d+\.\s*/, '').trim();
-        if (item && item.length > 10) {
+        if (item && item.length > 5) {
           items.push(item);
         }
       }
     }
   }
 
-  return items.slice(0, 7); // Limit to 7 items
+  return items.slice(0, 7);
 }
 
 function extractKeyFactors(text) {
   const factors = [];
-
-  // Look for common factors mentioned
-  const factorPatterns = [
-    { name: 'الموقع', keywords: ['موقع', 'المنطقة', 'الحي'], impact: 'مرتفع' },
-    { name: 'المساحة', keywords: ['مساحة', 'متر'], impact: 'متوسط' },
-    { name: 'العمر', keywords: ['عمر', 'سنة', 'سنوات'], impact: 'متوسط' },
-    { name: 'الحالة', keywords: ['حالة', 'صيانة', 'تشطيب'], impact: 'متوسط' },
-    { name: 'السوق', keywords: ['سوق', 'طلب', 'عرض'], impact: 'مرتفع' },
-    { name: 'البنية التحتية', keywords: ['بنية', 'طريق', 'مترو'], impact: 'إيجابي' },
-  ];
-
-  for (const factor of factorPatterns) {
-    for (const keyword of factor.keywords) {
-      if (text.includes(keyword)) {
+  const factorSection = extractSection(text, 'العوامل الرئيسية المؤثرة');
+  
+  if (factorSection) {
+    const lines = factorSection.split('\n');
+    for (const line of lines) {
+      const match = line.match(/(\d+)\.\s*([^:]+):\s*([^-]+)\s*-\s*(.+)/);
+      if (match) {
         factors.push({
-          factor: factor.name,
-          impact: factor.impact,
-          description: `تأثير ${factor.name} على التقييم`,
+          factor: match[2].trim(),
+          impact: match[3].trim(),
+          description: match[4].trim(),
         });
-        break;
       }
     }
   }
 
-  return factors.slice(0, 5);
+  return factors;
+}
+
+function extractMarketTrend(text) {
+  const trendMatch = text.match(/##\s*اتجاه السوق[^#]*?([\\s\\S]*?)(?=##|$)/i);
+  if (trendMatch) {
+    const trendText = trendMatch[1].trim();
+    if (trendText.includes('صاعد')) return 'صاعد';
+    if (trendText.includes('هابط')) return 'هابط';
+    return 'مستقر';
+  }
+  return 'مستقر';
 }
 
