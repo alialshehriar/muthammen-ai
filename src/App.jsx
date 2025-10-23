@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button.jsx';
 import { Card } from '@/components/ui/card.jsx';
-import PropertyForm from './components/PropertyFormSimple';
+import PropertyFormAdvanced from './components/PropertyFormAdvanced';
 import ResultDisplay from './components/ResultDisplay';
 import Subscriptions from './pages/Subscriptions';
 import Referrals from './pages/Referrals';
@@ -17,8 +17,8 @@ import useRefCapture from './hooks/useRefCapture';
 import { 
   Building2, Sparkles, Settings, RotateCcw, 
   Brain, Zap, TrendingUp, CheckCircle2,
-  Github, Mail, AlertCircle, Home, CreditCard,
-  Users, BarChart3, MessageSquare, Map, LayoutDashboard, LogIn
+  Mail, AlertCircle, Home, CreditCard,
+  Users, BarChart3, MessageSquare, Map, LayoutDashboard, LogIn, Phone
 } from 'lucide-react';
 import './App.css';
 
@@ -441,7 +441,7 @@ function App() {
                 )}
               </div>
               
-              <PropertyForm onSubmit={handleEvaluate} isLoading={isLoading} />
+              <PropertyFormAdvanced onSubmit={handleEvaluate} isLoading={isLoading} />
             </Card>
           </div>
 
@@ -740,25 +740,25 @@ function Footer() {
 
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              <Github className="w-5 h-5" />
-            </a>
-            <a
-              href="mailto:info@mothammen.sa"
-              className="text-muted-foreground hover:text-primary transition-colors"
+              href="mailto:info@muthammen.com"
+              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
             >
               <Mail className="w-5 h-5" />
+              <span className="text-sm">info@muthammen.com</span>
+            </a>
+            <a
+              href="tel:+966599988522"
+              className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+            >
+              <Phone className="w-5 h-5" />
+              <span className="text-sm" dir="ltr">+966 59 998 8522</span>
             </a>
           </div>
         </div>
 
         <div className="mt-4 text-center text-xs text-muted-foreground">
           <p>
-            💡 هذا التطبيق يستخدم الذكاء الاصطناعي لتقديم تقييمات تقديرية. للحصول على تقييم رسمي معتمد، يُنصح بالتواصل مع مقيّم عقاري مرخّص.
+            مُثمّن - تقييم عقاري أدق من المثمن البشري بناءً على 50+ متغير، 5 طرق تثمين، وبيانات السوق الحية
           </p>
         </div>
       </div>
