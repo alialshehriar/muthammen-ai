@@ -40,10 +40,31 @@ const OverviewTab = ({ stats }) => {
     signups: parseInt(day.signups)
   })) || [];
 
-  // بيانات أكثر المدن
+  // بيانات أكثر المدن (من waitlist)
   const citiesData = stats.cities?.slice(0, 5).map(city => ({
     name: city.city || 'غير محدد',
     count: parseInt(city.count)
+  })) || [];
+
+  // بيانات توزيع المدن من التقييمات
+  const evaluationCitiesData = stats.cities?.map(city => ({
+    name: city.city || 'غير محدد',
+    count: parseInt(city.count)
+  })) || [];
+
+  // بيانات توزيع أنواع العقارات
+  const propertyTypesData = stats.propertyTypes?.map(type => ({
+    name: type.property_type === 'villa' ? 'فيلا' :
+          type.property_type === 'apartment' ? 'شقة' :
+          type.property_type === 'land' ? 'أرض' :
+          type.property_type === 'building' ? 'عمارة' :
+          type.property_type === 'commercial' ? 'تجاري' : 'غير محدد',
+    value: parseInt(type.count),
+    color: type.property_type === 'villa' ? '#3b82f6' :
+           type.property_type === 'apartment' ? '#10b981' :
+           type.property_type === 'land' ? '#f59e0b' :
+           type.property_type === 'building' ? '#8b5cf6' :
+           type.property_type === 'commercial' ? '#ec4899' : '#6b7280'
   })) || [];
 
   return (
@@ -56,10 +77,10 @@ const OverviewTab = ({ stats }) => {
               <Users className="w-6 h-6 text-blue-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm text-muted-foreground">إجمالي المستخدمين</p>
-              <p className="text-3xl font-black">{stats.users?.total || 0}</p>
+              <p className="text-sm text-muted-foreground">إجمالي التقييمات</p>
+              <p className="text-3xl font-black">{stats.totalEvaluations || 0}</p>
               <p className="text-xs text-green-600 mt-1">
-                +{stats.users?.newThisWeek || 0} هذا الأسبوع
+                +{stats.evaluationsThisWeek || 0} هذا الأسبوع
               </p>
             </div>
           </div>
@@ -71,10 +92,10 @@ const OverviewTab = ({ stats }) => {
               <Activity className="w-6 h-6 text-green-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm text-muted-foreground">تسجيلات جديدة</p>
-              <p className="text-3xl font-black">{stats.users?.newThisMonth || 0}</p>
+              <p className="text-sm text-muted-foreground">متوسط قيمة العقار</p>
+              <p className="text-3xl font-black">{(stats.avgPropertyValue || 0).toLocaleString('ar-SA')}</p>
               <p className="text-xs text-muted-foreground mt-1">
-                هذا الشهر
+                ريال سعودي
               </p>
             </div>
           </div>
@@ -191,13 +212,84 @@ const OverviewTab = ({ stats }) => {
         </Card>
       </div>
 
+      {/* توزيع التقييمات حسب المدينة ونوع العقار */}
+      {(evaluationCitiesData.length > 0 || propertyTypesData.length > 0) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* توزيع التقييمات حسب المدينة */}
+          {evaluationCitiesData.length > 0 && (
+            <Card className="p-6">
+              <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-blue-600" />
+                توزيع التقييمات حسب المدينة
+              </h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={evaluationCitiesData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fontSize: 12 }}
+                    stroke="#888"
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 12 }}
+                    stroke="#888"
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#fff',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="count" 
+                    fill={COLORS.primary}
+                    radius={[8, 8, 0, 0]}
+                    name="عدد التقييمات"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          )}
+
+          {/* توزيع التقييمات حسب نوع العقار */}
+          {propertyTypesData.length > 0 && (
+            <Card className="p-6">
+              <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-green-600" />
+                توزيع التقييمات حسب نوع العقار
+              </h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={propertyTypesData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {propertyTypesData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          )}
+        </div>
+      )}
+
       {/* المدن وأكثر المحيلين */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* أكثر المدن */}
         <Card className="p-6">
           <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-green-600" />
-            أكثر المدن نشاطاً
+            أكثر المدن نشاطاً (قائمة الانتظار)
           </h3>
           {citiesData.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>

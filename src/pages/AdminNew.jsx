@@ -88,13 +88,38 @@ const AdminNew = ({ onLogout }) => {
   // تحميل الإحصائيات
   const loadStats = async () => {
     try {
-      const response = await fetch('/api/admin/stats');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setStats(data.stats);
+      // جلب إحصائيات التقييمات
+      const evaluationsResponse = await fetch('/api/admin/evaluations');
+      let evaluationsData = null;
+      if (evaluationsResponse.ok) {
+        const evalData = await evaluationsResponse.json();
+        if (evalData.success && evalData.data) {
+          evaluationsData = evalData.data;
         }
       }
+      
+      // جلب إحصائيات waitlist و referrals
+      const statsResponse = await fetch('/api/admin/stats');
+      let statsData = null;
+      if (statsResponse.ok) {
+        const data = await statsResponse.json();
+        if (data.success) {
+          statsData = data.stats;
+        }
+      }
+      
+      // دمج البيانات
+      const combinedStats = {
+        ...statsData,
+        totalEvaluations: evaluationsData?.stats?.total || 0,
+        avgPropertyValue: parseFloat(evaluationsData?.stats?.avgValue) || 0,
+        evaluationsThisWeek: evaluationsData?.stats?.thisWeek || 0,
+        evaluationsThisMonth: evaluationsData?.stats?.thisMonth || 0,
+        cities: evaluationsData?.cities || [],
+        propertyTypes: evaluationsData?.propertyTypes || []
+      };
+      
+      setStats(combinedStats);
     } catch (err) {
       console.error('Error loading stats:', err);
     }
