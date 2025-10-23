@@ -84,11 +84,10 @@ async function getUsers(req, res) {
         u.last_login,
         COUNT(DISTINCT e.id) as total_evaluations,
         COUNT(DISTINCT r.id) as total_referrals,
-        COALESCE(SUM(rw.points), 0) as total_points
+        0 as total_points
       FROM users u
       LEFT JOIN evaluations e ON e.user_id = u.id
       LEFT JOIN users r ON r.referred_by = u.referral_code
-      LEFT JOIN referral_rewards rw ON rw.user_id = u.id
       ${whereClause}
       GROUP BY u.id
       ORDER BY u.created_at DESC
