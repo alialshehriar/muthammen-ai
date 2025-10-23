@@ -69,13 +69,16 @@ function App() {
   }, []);
 
   const handleEvaluate = async (formData) => {
+    console.log('🚀 handleEvaluate تم استدعاؤه بالبيانات:', formData);
     setIsLoading(true);
     setError(null);
     setResult(null);
 
     try {
       // calculatePropertyValue يتعامل مع كل شيء داخلياً (الوكيل + fallback)
+      console.log('🧠 استدعاء calculatePropertyValue...');
       const evaluation = await calculatePropertyValue(formData);
+      console.log('✅ النتيجة:', evaluation);
       setResult(evaluation);
     } catch (err) {
       console.error('خطأ في التقييم:', err);

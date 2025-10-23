@@ -28,10 +28,15 @@ export default function PropertyForm({ onSubmit, isLoading }) {
   };
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    console.log(`📝 تحديث الحقل: ${field} = ${value}`);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [field]: value
+      };
+      console.log('📄 formData الجديد:', newData);
+      return newData;
+    });
   };
 
   const handleCheckbox = (field) => {
@@ -44,12 +49,13 @@ export default function PropertyForm({ onSubmit, isLoading }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // قراءة القيم من DOM مباشرة كـ fallback
+    // قراءة القيم من DOM مباشرة باستخدام id (أكثر دقة من placeholder)
     const form = e.target;
-    const areaInput = form.querySelector('input[placeholder="مثال: 300"]');
-    const citySelect = form.querySelectorAll('select')[0];
-    const districtInput = form.querySelector('input[placeholder="مثال: الياسمين"]');
+    const areaInput = form.querySelector('#area');
+    const citySelect = form.querySelector('#city');
+    const districtInput = form.querySelector('#district');
     
+    // دمج القيم من state و DOM
     const finalData = {
       ...formData,
       area: formData.area || (areaInput ? areaInput.value : ''),
@@ -57,6 +63,13 @@ export default function PropertyForm({ onSubmit, isLoading }) {
       district: formData.district || (districtInput ? districtInput.value : '')
     };
     
+    // Validation: التحقق من البيانات الأساسية
+    if (!finalData.area || !finalData.city) {
+      alert('يرجى إدخال المساحة والمدينة على الأقل');
+      return;
+    }
+    
+    console.log('📤 إرسال البيانات:', finalData);
     onSubmit(finalData);
   };
 
