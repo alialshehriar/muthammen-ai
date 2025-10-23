@@ -32,6 +32,8 @@ const AdminNew = ({ onLogout }) => {
   const [waitlist, setWaitlist] = useState([]);
   const [agentLogs, setAgentLogs] = useState([]);
   const [agentStats, setAgentStats] = useState(null);
+  const [evaluations, setEvaluations] = useState([]);
+  const [evaluationsPagination, setEvaluationsPagination] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [cityFilter, setCityFilter] = useState('');
   const [rewardFilter, setRewardFilter] = useState('');
@@ -76,7 +78,8 @@ const AdminNew = ({ onLogout }) => {
       await Promise.all([
         loadStats(),
         loadWaitlist(),
-        loadAgentLogs()
+        loadAgentLogs(),
+        loadEvaluations()
       ]);
     } catch (err) {
       console.error('Error loading data:', err);
@@ -137,6 +140,22 @@ const AdminNew = ({ onLogout }) => {
       }
     } catch (err) {
       console.error('Error loading waitlist:', err);
+    }
+  };
+
+  // تحميل التقييمات
+  const loadEvaluations = async () => {
+    try {
+      const response = await fetch('/api/admin/evaluations?limit=100');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setEvaluations(data.data.evaluations || []);
+          setEvaluationsPagination(data.data.pagination || null);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading evaluations:', err);
     }
   };
 
@@ -438,6 +457,8 @@ const AdminNew = ({ onLogout }) => {
             <AIMonitorTab 
               agentLogs={agentLogs}
               agentStats={agentStats}
+              evaluations={evaluations}
+              evaluationsPagination={evaluationsPagination}
               testAgent={testAgent}
               refreshing={refreshing}
               loading={loading}

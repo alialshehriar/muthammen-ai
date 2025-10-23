@@ -5,7 +5,7 @@ import {
   Brain, Zap, CheckCircle2, XCircle, AlertCircle, Clock, Activity, RefreshCw
 } from 'lucide-react';
 
-const AIMonitorTab = ({ agentLogs, agentStats, testAgent, refreshing, loading }) => {
+const AIMonitorTab = ({ agentLogs, agentStats, evaluations, evaluationsPagination, testAgent, refreshing, loading }) => {
   if (loading || !agentStats) {
     return (
       <div className="text-center text-muted-foreground py-12">
@@ -189,9 +189,61 @@ const AIMonitorTab = ({ agentLogs, agentStats, testAgent, refreshing, loading })
         </Card>
       </div>
 
-      {/* سجل الاختبارات */}
+      {/* جميع التقييمات */}
       <Card className="p-6">
-        <h3 className="font-bold text-xl mb-6">سجل الاختبارات الأخيرة (آخر 50)</h3>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-bold text-xl">جميع التقييمات ({evaluationsPagination?.total || 0})</h3>
+        </div>
+        
+        {evaluations && evaluations.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-right p-3 font-bold">ID</th>
+                  <th className="text-right p-3 font-bold">المدينة</th>
+                  <th className="text-right p-3 font-bold">الحي</th>
+                  <th className="text-right p-3 font-bold">النوع</th>
+                  <th className="text-right p-3 font-bold">المساحة</th>
+                  <th className="text-right p-3 font-bold">القيمة المقدرة</th>
+                  <th className="text-right p-3 font-bold">الثقة</th>
+                  <th className="text-right p-3 font-bold">المصدر</th>
+                  <th className="text-right p-3 font-bold">التاريخ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {evaluations.map((evaluation) => (
+                  <tr key={evaluation.id} className="border-b hover:bg-gray-50">
+                    <td className="p-3">{evaluation.id}</td>
+                    <td className="p-3">{evaluation.city}</td>
+                    <td className="p-3">{evaluation.district || '-'}</td>
+                    <td className="p-3">{evaluation.property_type}</td>
+                    <td className="p-3">{evaluation.area} م²</td>
+                    <td className="p-3 font-bold">{parseFloat(evaluation.estimated_value).toLocaleString('ar-SA')} ريال</td>
+                    <td className="p-3">{evaluation.confidence}%</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        evaluation.used_agent ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {evaluation.used_agent ? 'AI' : 'تقليدي'}
+                      </span>
+                    </td>
+                    <td className="p-3 text-sm">{new Date(evaluation.created_at).toLocaleDateString('ar-SA')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center text-muted-foreground py-12">
+            لا توجد تقييمات حتى الآن
+          </div>
+        )}
+      </Card>
+
+      {/* سجل اختبارات الوكيل */}
+      <Card className="p-6">
+        <h3 className="font-bold text-xl mb-6">سجل اختبارات الوكيل (آخر 50)</h3>
         
         {agentLogs.length === 0 ? (
           <div className="text-center text-muted-foreground py-12">
