@@ -7,6 +7,15 @@ import {
 
 export default function ResultDisplay({ result }) {
   if (!result) return null;
+  
+  // Safe access helpers
+  const safeAnalysis = result.analysis || {};
+  const safeAdjustments = result.adjustments || {};
+  const safeRecommendations = result.recommendations || [];
+  const safeKeyFactors = safeAnalysis.keyFactors || [];
+  const safeStrengths = safeAnalysis.strengths || [];
+  const safeWeaknesses = safeAnalysis.weaknesses || [];
+  const safeAppliedFactors = safeAdjustments.appliedFactors || [];
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('ar-SA', {
@@ -135,9 +144,9 @@ export default function ResultDisplay({ result }) {
           )}
 
           {/* العوامل الرئيسية */}
-          {result.analysis.keyFactors && result.analysis.keyFactors.length > 0 && (
+          {safeKeyFactors.length > 0 && (
             <div className="space-y-3">
-              {result.analysis.keyFactors.map((factor, index) => (
+              {safeKeyFactors.map((factor, index) => (
                 <div key={index} className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-semibold">{factor.factor}</h4>
@@ -168,7 +177,7 @@ export default function ResultDisplay({ result }) {
                   نقاط القوة
                 </h4>
                 <ul className="space-y-1">
-                  {result.analysis.strengths.map((strength, index) => (
+                  {safeStrengths.map((strength, index) => (
                     <li key={index} className="text-sm text-green-800">• {strength}</li>
                   ))}
                 </ul>
@@ -182,7 +191,7 @@ export default function ResultDisplay({ result }) {
                   نقاط الضعف
                 </h4>
                 <ul className="space-y-1">
-                  {result.analysis.weaknesses.map((weakness, index) => (
+                  {safeWeaknesses.map((weakness, index) => (
                     <li key={index} className="text-sm text-amber-800">• {weakness}</li>
                   ))}
                 </ul>
@@ -207,10 +216,10 @@ export default function ResultDisplay({ result }) {
             </div>
           )}
 
-          {result.adjustments.appliedFactors && result.adjustments.appliedFactors.length > 0 && (
+          {safeAppliedFactors.length > 0 && (
             <div className="space-y-2">
               <p className="text-sm font-semibold mb-2">العوامل المطبقة:</p>
-              {result.adjustments.appliedFactors.map((factor, index) => (
+              {safeAppliedFactors.map((factor, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border border-border rounded-lg">
                   <div>
                     <span className="font-semibold text-sm">{factor.factor}:</span>
@@ -287,7 +296,7 @@ export default function ResultDisplay({ result }) {
           </div>
           
           <ul className="space-y-3">
-            {result.recommendations.map((recommendation, index) => (
+            {safeRecommendations.map((recommendation, index) => (
               <li key={index} className="flex items-start gap-3 p-3 bg-white/70 rounded-lg">
                 <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                 <span className="text-sm text-blue-900">{recommendation}</span>
