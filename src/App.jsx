@@ -75,25 +75,28 @@ function App() {
     setResult(null);
 
     try {
-      // calculatePropertyValue يتعامل مع كل شيء داخلياً (الوكيل + fallback)
-      console.log('🧠 استدعاء calculatePropertyValue...');
-      const evaluation = await calculatePropertyValue(formData);
+      // Call the API endpoint
+      console.log('🧠 استدعاء /api/evaluate...');
+      const response = await fetch('/api/evaluate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'فشل التقييم');
+      }
+      
+      const evaluation = await response.json();
       console.log('✅ النتيجة:', evaluation);
       setResult(evaluation);
     } catch (err) {
       console.error('خطأ في التقييم:', err);
       setError(err.message || 'حدث خطأ أثناء التقييم. يرجى المحاولة مرة أخرى.');
-      
-      // في حالة فشل GPT، استخدم المحرك المحلي كبديل
-      if (useGPT) {
-        try {
-          const fallbackEvaluation = await calculatePropertyValue(formData);
-          setResult(fallbackEvaluation);
-          setError('تم استخدام المحرك المحلي بدلاً من GPT');
-        } catch (fallbackErr) {
-          console.error('فشل المحرك المحلي أيضاً:', fallbackErr);
-        }
-      }
+
     } finally {
       setIsLoading(false);
     }
