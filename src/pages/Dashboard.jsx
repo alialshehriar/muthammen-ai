@@ -29,37 +29,51 @@ function Dashboard({ onLogout, navigateTo }) {
     loadStats();
   }, []);
 
-  const loadStats = () => {
-    // جلب سجل التقييمات
-    const history = JSON.parse(localStorage.getItem('evaluation_history') || '[]');
-    
-    // حساب الإحصائيات
-    const totalEvaluations = history.length;
-    const avgValue = history.length > 0 
-      ? Math.round(history.reduce((sum, item) => sum + (item.estimatedValue || 0), 0) / history.length)
-      : 0;
+  const loadStats = async () => {
+    try {
+      // جلب البيانات من API
+      const response = await fetch('/api/admin/evaluations');
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        const { stats, evaluations } = data.data;
+        
+        // النشاط الأخير
+        const recentActivity = evaluations.slice(0, 5).map(item => ({
+          type: 'evaluation',
+          date: item.created_at,
+          value: item.estimated_value,
+          city: item.city,
+          district: item.district
+        }));
 
-    // جلب بيانات الإحالات
-    const referralCode = localStorage.getItem('referral_code');
-    const referralCount = parseInt(localStorage.getItem('referral_count') || '0');
-
-    // النشاط الأخير
-    const recentActivity = history.slice(-5).reverse().map(item => ({
-      type: 'evaluation',
-      date: item.timestamp || new Date().toISOString(),
-      value: item.estimatedValue,
-      city: item.city,
-      district: item.district
-    }));
-
-    setStats({
-      totalEvaluations,
-      totalUsers: 1, // في النسخة التجريبية
-      avgPropertyValue: avgValue,
-      activeSubscriptions: 0, // سيتم ربطه لاحقاً
-      referralCount,
-      recentActivity
-    });
+        setStats({
+          totalEvaluations: stats.total || 0,
+          totalUsers: 1,
+          avgPropertyValue: parseFloat(stats.avgValue) || 0,
+          activeSubscriptions: 0,
+          referralCount: 0,
+          recentActivity
+        });
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error);
+      // Fallback to localStorage if API fails
+      const history = JSON.parse(localStorage.getItem('evaluation_history') || '[]');
+      const totalEvaluations = history.length;
+      const avgValue = history.length > 0 
+        ? Math.round(history.reduce((sum, item) => sum + (item.estimatedValue || 0), 0) / history.length)
+        : 0;
+      
+      setStats({
+        totalEvaluations,
+        totalUsers: 1,
+        avgPropertyValue: avgValue,
+        activeSubscriptions: 0,
+        referralCount: 0,
+        recentActivity: []
+      });
+    }
   };
 
   const formatNumber = (num) => {
