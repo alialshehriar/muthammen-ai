@@ -8,7 +8,7 @@ import Referrals from './pages/Referrals';
 import MarketStudy from './market/MarketStudy';
 import MapView from './map/MapView';
 import WaitlistMap from './pages/WaitlistMap';
-import Admin from './pages/Admin';
+import Admin from './pages/AdminNew';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import { calculatePropertyValue } from './lib/aiEngine';
