@@ -1067,7 +1067,7 @@ export default function PropertyForm({ onSubmit, isLoading }) {
       {/* زر الإرسال */}
       <Button
         type="submit"
-        disabled={isLoading || !formData.area || !formData.city || !formData.district}
+        disabled={isLoading}
         className="w-full h-14 text-lg font-bold primary-gradient hover:opacity-90 transition-opacity"
       >
         {isLoading ? (
