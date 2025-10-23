@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button.jsx';
 import { Card } from '@/components/ui/card.jsx';
-import PropertyForm from './components/PropertyForm';
+import PropertyForm from './components/PropertyFormSimple';
 import ResultDisplay from './components/ResultDisplay';
 import Subscriptions from './pages/Subscriptions';
 import Referrals from './pages/Referrals';
