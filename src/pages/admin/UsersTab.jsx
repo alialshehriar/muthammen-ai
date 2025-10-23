@@ -23,7 +23,7 @@ const UsersTab = ({ loading }) => {
     try {
       // Fetch both waitlist and users
       const [waitlistRes, usersRes] = await Promise.all([
-        fetch('/api/admin/waitlist'),
+        fetch('/api/waitlist/all'),
         fetch('/api/admin/users')
       ]);
 
@@ -36,7 +36,7 @@ const UsersTab = ({ loading }) => {
       if (waitlistRes.ok) {
         const waitlistData = await waitlistRes.json();
         if (waitlistData.success) {
-          const waitlistAccounts = (waitlistData.data?.entries || []).map(entry => ({
+          const waitlistAccounts = (waitlistData.signups || []).map(entry => ({
             ...entry,
             account_type: 'waitlist',
             status: 'active',
