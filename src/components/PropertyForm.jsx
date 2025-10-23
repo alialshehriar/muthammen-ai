@@ -122,7 +122,6 @@ export default function PropertyForm({ onSubmit, isLoading }) {
                 placeholder="مثال: 300"
                 value={formData.area || ''}
                 onChange={(e) => handleChange('area', e.target.value)}
-                required
                 className="text-lg"
               />
             </div>
@@ -137,7 +136,6 @@ export default function PropertyForm({ onSubmit, isLoading }) {
                 id="city"
                 value={formData.city || ''}
                 onChange={(e) => handleChange('city', e.target.value)}
-                required
                 className="w-full px-3 py-2 rounded-md border border-input bg-background text-lg"
               >
                 <option value="">اختر المدينة</option>
@@ -177,7 +175,6 @@ export default function PropertyForm({ onSubmit, isLoading }) {
                 value={formData.district || ''}
                 onChange={(e) => handleChange('district', e.target.value)}
                 placeholder="مثال: الياسمين"
-                required
                 className="text-lg"
               />
               {!formData.district && (
