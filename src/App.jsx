@@ -34,6 +34,9 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [sessionData, setSessionData] = useState(null);
+  const [canEvaluate, setCanEvaluate] = useState(true);
+  const [limitMessage, setLimitMessage] = useState(null);
 
   // التحقق من حالة تسجيل الدخول عند تحميل التطبيق
   useEffect(() => {
@@ -42,7 +45,41 @@ function App() {
       setIsLoggedIn(true);
       setUserData(JSON.parse(user));
     }
+    
+    // Initialize session tracking
+    initializeSession();
   }, []);
+
+  // Initialize visitor session
+  const initializeSession = async () => {
+    try {
+      // Get or create visitor ID
+      let visitorId = localStorage.getItem('muthammen_visitor_id');
+      if (!visitorId) {
+        visitorId = crypto.randomUUID();
+        localStorage.setItem('muthammen_visitor_id', visitorId);
+      }
+
+      // Track session
+      const response = await fetch('/api/session/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ visitorId })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setSessionData(data.session);
+        setCanEvaluate(data.session.canEvaluate);
+        
+        if (!data.session.canEvaluate) {
+          setLimitMessage('لقد استخدمت تقييمك المجاني. سجّل للحصول على 3 تقييمات إضافية!');
+        }
+      }
+    } catch (error) {
+      console.error('Error initializing session:', error);
+    }
+  };
 
   // قراءة URL وتحديد الصفحة المناسبة
   useEffect(() => {
@@ -70,11 +107,26 @@ function App() {
 
   const handleEvaluate = async (formData) => {
     console.log('🚀 handleEvaluate تم استدعاؤه بالبيانات:', formData);
+    
+    // Check evaluation limit
+    if (!canEvaluate && !isLoggedIn) {
+      setError(limitMessage || 'لقد وصلت إلى الحد الأقصى للتقييمات المجانية');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setResult(null);
 
     try {
+      // Add session data to form
+      const enrichedFormData = {
+        ...formData,
+        visitorId: sessionData?.visitorId,
+        sessionId: sessionData?.sessionId,
+        referredBy: localStorage.getItem('ref') || null
+      };
+
       // Call the API endpoint
       console.log('🧠 استدعاء /api/evaluate...');
       const response = await fetch('/api/evaluate', {
@@ -82,7 +134,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(enrichedFormData),
       });
       
       if (!response.ok) {
@@ -93,6 +145,16 @@ function App() {
       const evaluation = await response.json();
       console.log('✅ النتيجة:', evaluation);
       setResult(evaluation);
+      
+      // Update session data after successful evaluation
+      if (sessionData) {
+        setSessionData({
+          ...sessionData,
+          evaluationCount: sessionData.evaluationCount + 1,
+          canEvaluate: (sessionData.evaluationCount + 1) < sessionData.maxEvaluations
+        });
+        setCanEvaluate((sessionData.evaluationCount + 1) < sessionData.maxEvaluations);
+      }
     } catch (err) {
       console.error('خطأ في التقييم:', err);
       setError(err.message || 'حدث خطأ أثناء التقييم. يرجى المحاولة مرة أخرى.');

@@ -176,16 +176,29 @@ ${formData.notes ? `### ملاحظات إضافية:\n${formData.notes}` : ''}
     const evaluation = parseAIResponse(aiResponse, formData);
 
     // Save evaluation to database
+    let shareToken = null;
+    let evaluationId = null;
     try {
-      await saveEvaluationToDatabase(formData, evaluation);
-      console.log('✅ Evaluation saved to database');
+      const dbResult = await saveEvaluationToDatabase(formData, evaluation);
+      shareToken = dbResult.share_token;
+      evaluationId = dbResult.id;
+      console.log('✅ Evaluation saved to database with ID:', evaluationId);
     } catch (dbError) {
       console.error('❌ Failed to save evaluation to database:', dbError);
       // Continue anyway - don't fail the request if DB save fails
     }
 
-    // Return the result
-    return res.status(200).json(evaluation);
+    // Add share info to response
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://muthammen.com';
+    const shareUrl = shareToken ? `${baseUrl}/share/${shareToken}` : null;
+
+    // Return the result with share info
+    return res.status(200).json({
+      ...evaluation,
+      id: evaluationId,
+      shareToken: shareToken,
+      shareUrl: shareUrl
+    });
 
   } catch (error) {
     console.error('❌ Error in evaluation:', error);
@@ -362,6 +375,12 @@ function extractMarketTrend(text) {
 }
 
 async function saveEvaluationToDatabase(formData, evaluation) {
+  // Import referral utilities
+  const { generateShareToken } = await import('./utils/refCode.js');
+  
+  // Generate share token for this evaluation
+  const shareToken = generateShareToken();
+  
   const sql = `
     INSERT INTO evaluations (
       city, district, property_type, area, built_area, age, condition,
@@ -374,7 +393,8 @@ async function saveEvaluationToDatabase(formData, evaluation) {
       has_maid_room, has_driver_room, has_storage, has_ac, has_kitchen,
       estimated_value, min_value, max_value, confidence,
       analysis, recommendations,
-      source, used_agent
+      source, used_agent,
+      share_token, referred_by, visitor_id, session_id
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7,
       $8, $9, $10, $11, $12,
@@ -385,9 +405,10 @@ async function saveEvaluationToDatabase(formData, evaluation) {
       $30, $31, $32, $33, $34,
       $35, $36, $37, $38,
       $39, $40,
-      $41, $42
+      $41, $42,
+      $43, $44, $45, $46
     )
-    RETURNING id
+    RETURNING id, share_token
   `;
 
   const values = [
@@ -432,7 +453,11 @@ async function saveEvaluationToDatabase(formData, evaluation) {
     JSON.stringify(evaluation.analysis),
     JSON.stringify(evaluation.recommendations),
     evaluation.source,
-    evaluation.usedAgent
+    evaluation.usedAgent,
+    shareToken,
+    formData.referredBy || null,
+    formData.visitorId || null,
+    formData.sessionId || null
   ];
 
   const result = await query(sql, values);

@@ -2,8 +2,9 @@ import { Card } from '@/components/ui/card.jsx';
 import { 
   TrendingUp, TrendingDown, Minus, CheckCircle2, 
   AlertCircle, Lightbulb, BarChart3, Target,
-  Sparkles, Brain, Clock, Award
+  Sparkles, Brain, Clock, Award, Share2, Copy, Check
 } from 'lucide-react';
+import { useState } from 'react';
 
 export default function ResultDisplay({ result }) {
   if (!result) return null;
@@ -333,6 +334,11 @@ export default function ResultDisplay({ result }) {
         </Card>
       )}
 
+      {/* زر المشاركة والإحالة */}
+      {result.shareUrl && (
+        <ShareCard shareUrl={result.shareUrl} />
+      )}
+
       {/* معلومات إضافية */}
       <div className="text-center text-sm text-muted-foreground space-y-1">
         <p>
@@ -348,6 +354,92 @@ export default function ResultDisplay({ result }) {
         )}
       </div>
     </div>
+  );
+}
+
+
+
+// Share Card Component
+function ShareCard({ shareUrl }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'تقييم عقاري من مُثمّن',
+          text: 'شاهد نتيجة تقييمي العقاري من مُثمّن - أدق تقييم عقاري بالذكاء الاصطناعي',
+          url: shareUrl
+        });
+      } catch (err) {
+        if (err.name !== 'AbortError') {
+          console.error('Error sharing:', err);
+        }
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
+  return (
+    <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200">
+      <div className="text-center space-y-4">
+        <div className="flex items-center justify-center gap-2">
+          <Share2 className="w-6 h-6 text-green-600" />
+          <h3 className="font-bold text-lg text-green-900">شارك التقييم واحصل على مكافآت</h3>
+        </div>
+        
+        <p className="text-sm text-green-800">
+          شارك نتيجة تقييمك مع المهتمين واحصل على نقاط مكافآت عند تسجيلهم أو إجراء تقييم جديد
+        </p>
+
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold"
+          >
+            <Share2 className="w-5 h-5" />
+            مشاركة التقييم
+          </button>
+          
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-2 px-6 py-3 bg-white text-green-600 border-2 border-green-600 rounded-lg hover:bg-green-50 transition-colors font-semibold"
+          >
+            {copied ? (
+              <>
+                <Check className="w-5 h-5" />
+                تم النسخ
+              </>
+            ) : (
+              <>
+                <Copy className="w-5 h-5" />
+                نسخ الرابط
+              </>
+            )}
+          </button>
+        </div>
+
+        <div className="text-xs text-green-700 bg-white/50 rounded-lg p-3">
+          <p className="font-semibold mb-1">كيف تعمل المكافآت؟</p>
+          <ul className="text-right space-y-1">
+            <li>• احصل على 10 نقاط لكل شخص يسجل من رابطك</li>
+            <li>• احصل على 5 نقاط إضافية عند إجراء أول تقييم له</li>
+            <li>• استبدل النقاط بتقييمات مجانية أو ميزات إضافية</li>
+          </ul>
+        </div>
+      </div>
+    </Card>
   );
 }
 

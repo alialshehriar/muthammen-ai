@@ -95,10 +95,56 @@ export async function generateUniqueRefCode(checkExists, maxAttempts = 10) {
   return generateRefCodeFromTimestamp();
 }
 
+/**
+ * Generate a unique share token for evaluation sharing
+ * @returns {string} 32 character hex string
+ */
+export function generateShareToken() {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Generate a visitor ID for anonymous users
+ * @returns {string} UUID v4 format
+ */
+export function generateVisitorId() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+/**
+ * Generate a session ID
+ * @returns {string} 24 character hex string
+ */
+export function generateSessionId() {
+  const array = new Uint8Array(12);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Validate share token format
+ * @param {string} token - The token to validate
+ * @returns {boolean} true if valid
+ */
+export function isValidShareToken(token) {
+  if (!token || typeof token !== 'string') return false;
+  return /^[a-f0-9]{32}$/.test(token);
+}
+
 export default {
   generateRefCode,
   generateRefCodeFromTimestamp,
   isValidRefCode,
-  generateUniqueRefCode
+  generateUniqueRefCode,
+  generateShareToken,
+  generateVisitorId,
+  generateSessionId,
+  isValidShareToken
 };
 
