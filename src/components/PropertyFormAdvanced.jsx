@@ -1,113 +1,83 @@
-import React, { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Button } from './ui/button';
-import { Textarea } from './ui/textarea';
-import { Checkbox } from './ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Loader2 } from 'lucide-react';
 
 export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
-  const [formData, setFormData] = useState({
-    // Basic Information
-    city: '',
-    district: '',
-    propertyType: '',
-    area: '',
-    builtArea: '',
-    age: '',
-    condition: '',
-    
-    // Detailed Information
-    floors: '',
-    bedrooms: '',
-    bathrooms: '',
-    livingRooms: '',
-    majlis: '',
-    finishing: '',
-    view: '',
-    direction: '',
-    streetWidth: '',
-    streetType: '',
-    corner: false,
-    facades: '1',
-    
-    // Location Details
-    distanceToMosque: '',
-    distanceToSchool: '',
-    distanceToHospital: '',
-    distanceToMall: '',
-    distanceToMetro: '',
-    distanceToMainRoad: '',
-    distanceToVision2030: '',
-    
-    // Facilities
-    parking: '',
-    elevator: false,
-    pool: false,
-    garden: false,
-    maidRoom: false,
-    driverRoom: false,
-    externalMajlis: false,
-    
-    // Finishing Details
-    floorType: '',
-    doorType: '',
-    windowType: '',
-    kitchenType: '',
-    bathroomType: '',
-    paintType: '',
-    decorationType: '',
-    acType: '',
-    
-    // Security & Safety
-    securitySystem: '',
-    alarmSystem: false,
-    fireSystem: false,
-    fence: false,
-    externalLighting: false,
-    
-    // Legal Status
-    deed: '',
-    buildingPermit: false,
-    occupancyPermit: false,
-    approvedPlan: false,
-    disputes: false,
-    mortgaged: false,
-    
-    // Usage & Return
-    currentUse: '',
-    currentRent: '',
-    expectedRent: '',
-    
-    // Additional Notes
-    notes: '',
-  });
-
-  const handleChange = (name, value) => {
-    console.log(`📝 Field changed: ${name} = ${value}`);
-    setFormData(prev => {
-      const newData = {
-        ...prev,
-        [name]: value
-      };
-      console.log('📄 Updated formData:', newData);
-      return newData;
-    });
-  };
+  // استخدام useRef للحصول على القيم مباشرة من DOM
+  const formRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('📝 Submitting advanced form data:', formData);
+    
+    // قراءة القيم مباشرة من form elements
+    const form = formRef.current;
+    if (!form) return;
+
+    const formData = {
+      // Basic Information
+      city: form.city?.value || '',
+      district: form.district?.value || '',
+      propertyType: form.propertyType?.value || '',
+      area: form.area?.value || '',
+      builtArea: form.builtArea?.value || '',
+      age: form.age?.value || '',
+      condition: form.condition?.value || '',
+      
+      // Detailed Information
+      floors: form.floors?.value || '',
+      bedrooms: form.bedrooms?.value || '',
+      bathrooms: form.bathrooms?.value || '',
+      livingRooms: form.livingRooms?.value || '',
+      majlis: form.majlis?.value || '',
+      finishing: form.finishing?.value || '',
+      view: form.view?.value || '',
+      direction: form.direction?.value || '',
+      streetWidth: form.streetWidth?.value || '',
+      streetType: form.streetType?.value || '',
+      corner: form.corner?.checked || false,
+      facades: form.facades?.value || '1',
+      
+      // Location Details
+      distanceToMosque: form.distanceToMosque?.value || '',
+      distanceToSchool: form.distanceToSchool?.value || '',
+      distanceToHospital: form.distanceToHospital?.value || '',
+      distanceToMall: form.distanceToMall?.value || '',
+      distanceToMetro: form.distanceToMetro?.value || '',
+      distanceToMainRoad: form.distanceToMainRoad?.value || '',
+      distanceToVision2030: form.distanceToVision2030?.value || '',
+      
+      // Facilities
+      parking: form.parking?.value || '',
+      elevator: form.elevator?.checked || false,
+      pool: form.pool?.checked || false,
+      garden: form.garden?.checked || false,
+      maidRoom: form.maidRoom?.checked || false,
+      driverRoom: form.driverRoom?.checked || false,
+      externalMajlis: form.externalMajlis?.checked || false,
+      
+      // Additional Notes
+      notes: form.notes?.value || '',
+    };
+    
+    console.log('📤 إرسال بيانات النموذج المتقدم:', formData);
+    
+    // Validation
+    if (!formData.area || !formData.city) {
+      alert('يرجى إدخال المساحة والمدينة على الأقل');
+      return;
+    }
+    
     onSubmit(formData);
   };
 
   const cities = [
-    'الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة',
-    'الطائف', 'أبها', 'تبوك', 'الخبر', 'القطيف', 'حائل', 'جازان',
-    'نجران', 'الباحة', 'عرعر', 'سكاكا', 'ينبع', 'الجبيل', 'الأحساء', 'القصيم'
+    'الرياض', 'جدة', 'الدمام', 'مكة المكرمة', 'المدينة المنورة', 'الطائف',
+    'أبها', 'تبوك', 'الخبر', 'القطيف', 'حائل', 'جازان', 'نجران', 'الباحة',
+    'عرعر', 'سكاكا', 'ينبع', 'الجبيل', 'الأحساء', 'القصيم'
   ];
 
   const propertyTypes = [
@@ -145,12 +115,12 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
       <Card>
         <CardHeader>
           <CardTitle>نموذج التقييم المتقدم</CardTitle>
           <CardDescription>
-            املأ أكبر قدر ممكن من المعلومات للحصول على تقييم دقيق وشامل
+            املأ أكبر قدر ممكن من المعلومات للحصول على تقييم دقيق وشامل بناءً على 50+ متغير
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -167,50 +137,51 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="city">المدينة *</Label>
-                  <Select value={formData.city} onValueChange={(value) => handleChange('city', value)}>
-                    <SelectTrigger id="city">
-                      <SelectValue placeholder="اختر المدينة" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {cities.map(city => (
-                        <SelectItem key={city} value={city}>{city}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="city"
+                    name="city"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                    required
+                  >
+                    <option value="">اختر المدينة</option>
+                    {cities.map(city => (
+                      <option key={city} value={city}>{city}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="district">الحي</Label>
                   <Input
                     id="district"
-                    value={formData.district}
-                    onChange={(e) => handleChange('district', e.target.value)}
+                    name="district"
                     placeholder="مثال: الياسمين"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="propertyType">نوع العقار *</Label>
-                  <Select value={formData.propertyType} onValueChange={(value) => handleChange('propertyType', value)}>
-                    <SelectTrigger id="propertyType">
-                      <SelectValue placeholder="اختر نوع العقار" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {propertyTypes.map(type => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="propertyType"
+                    name="propertyType"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                    required
+                  >
+                    <option value="">اختر نوع العقار</option>
+                    {propertyTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="area">مساحة الأرض (م²) *</Label>
                   <Input
                     id="area"
+                    name="area"
                     type="number"
-                    value={formData.area}
-                    onChange={(e) => handleChange('area', e.target.value)}
                     placeholder="300"
+                    required
                   />
                 </div>
 
@@ -218,39 +189,38 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="builtArea">مساحة البناء (م²)</Label>
                   <Input
                     id="builtArea"
+                    name="builtArea"
                     type="number"
-                    value={formData.builtArea}
-                    onChange={(e) => handleChange('builtArea', e.target.value)}
                     placeholder="250"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="age">عمر العقار</Label>
-                  <Select value={formData.age} onValueChange={(value) => handleChange('age', value)}>
-                    <SelectTrigger id="age">
-                      <SelectValue placeholder="اختر عمر العقار" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {propertyAges.map(age => (
-                        <SelectItem key={age} value={age}>{age}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="age"
+                    name="age"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                  >
+                    <option value="">اختر عمر العقار</option>
+                    {propertyAges.map(age => (
+                      <option key={age} value={age}>{age}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="condition">حالة العقار</Label>
-                  <Select value={formData.condition} onValueChange={(value) => handleChange('condition', value)}>
-                    <SelectTrigger id="condition">
-                      <SelectValue placeholder="اختر الحالة" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {conditions.map(condition => (
-                        <SelectItem key={condition} value={condition}>{condition}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="condition"
+                    name="condition"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                  >
+                    <option value="">اختر الحالة</option>
+                    {conditions.map(cond => (
+                      <option key={cond} value={cond}>{cond}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </TabsContent>
@@ -259,45 +229,41 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
             <TabsContent value="details" className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="floors">عدد الطوابق</Label>
+                  <Label htmlFor="floors">عدد الأدوار</Label>
                   <Input
                     id="floors"
+                    name="floors"
                     type="number"
-                    value={formData.floors}
-                    onChange={(e) => handleChange('floors', e.target.value)}
                     placeholder="2"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bedrooms">عدد الغرف</Label>
+                  <Label htmlFor="bedrooms">عدد غرف النوم</Label>
                   <Input
                     id="bedrooms"
+                    name="bedrooms"
                     type="number"
-                    value={formData.bedrooms}
-                    onChange={(e) => handleChange('bedrooms', e.target.value)}
                     placeholder="4"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="bathrooms">عدد الحمامات</Label>
+                  <Label htmlFor="bathrooms">عدد دورات المياه</Label>
                   <Input
                     id="bathrooms"
+                    name="bathrooms"
                     type="number"
-                    value={formData.bathrooms}
-                    onChange={(e) => handleChange('bathrooms', e.target.value)}
                     placeholder="3"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="livingRooms">عدد الصالات</Label>
+                  <Label htmlFor="livingRooms">عدد غرف المعيشة</Label>
                   <Input
                     id="livingRooms"
+                    name="livingRooms"
                     type="number"
-                    value={formData.livingRooms}
-                    onChange={(e) => handleChange('livingRooms', e.target.value)}
                     placeholder="2"
                   />
                 </div>
@@ -306,105 +272,102 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="majlis">عدد المجالس</Label>
                   <Input
                     id="majlis"
+                    name="majlis"
                     type="number"
-                    value={formData.majlis}
-                    onChange={(e) => handleChange('majlis', e.target.value)}
                     placeholder="1"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="finishing">نوع التشطيب</Label>
-                  <Select value={formData.finishing} onValueChange={(value) => handleChange('finishing', value)}>
-                    <SelectTrigger id="finishing">
-                      <SelectValue placeholder="اختر نوع التشطيب" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {finishingTypes.map(type => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="finishing"
+                    name="finishing"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                  >
+                    <option value="">اختر نوع التشطيب</option>
+                    {finishingTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="view">الإطلالة</Label>
-                  <Select value={formData.view} onValueChange={(value) => handleChange('view', value)}>
-                    <SelectTrigger id="view">
-                      <SelectValue placeholder="اختر الإطلالة" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {views.map(view => (
-                        <SelectItem key={view} value={view}>{view}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="view"
+                    name="view"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                  >
+                    <option value="">اختر الإطلالة</option>
+                    {views.map(v => (
+                      <option key={v} value={v}>{v}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="direction">الاتجاه</Label>
-                  <Select value={formData.direction} onValueChange={(value) => handleChange('direction', value)}>
-                    <SelectTrigger id="direction">
-                      <SelectValue placeholder="اختر الاتجاه" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {directions.map(dir => (
-                        <SelectItem key={dir} value={dir}>{dir}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="direction"
+                    name="direction"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                  >
+                    <option value="">اختر الاتجاه</option>
+                    {directions.map(dir => (
+                      <option key={dir} value={dir}>{dir}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="streetWidth">عرض الشارع</Label>
-                  <Select value={formData.streetWidth} onValueChange={(value) => handleChange('streetWidth', value)}>
-                    <SelectTrigger id="streetWidth">
-                      <SelectValue placeholder="اختر عرض الشارع" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {streetWidths.map(width => (
-                        <SelectItem key={width} value={width}>{width}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <select
+                    id="streetWidth"
+                    name="streetWidth"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                  >
+                    <option value="">اختر عرض الشارع</option>
+                    {streetWidths.map(width => (
+                      <option key={width} value={width}>{width}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="streetType">نوع الشارع</Label>
-                  <Select value={formData.streetType} onValueChange={(value) => handleChange('streetType', value)}>
-                    <SelectTrigger id="streetType">
-                      <SelectValue placeholder="اختر نوع الشارع" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {streetTypes.map(type => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Checkbox
-                    id="corner"
-                    checked={formData.corner}
-                    onCheckedChange={(checked) => handleChange('corner', checked)}
-                  />
-                  <Label htmlFor="corner">زاوية</Label>
+                  <select
+                    id="streetType"
+                    name="streetType"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background"
+                  >
+                    <option value="">اختر نوع الشارع</option>
+                    {streetTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="facades">عدد الواجهات</Label>
-                  <Select value={formData.facades} onValueChange={(value) => handleChange('facades', value)}>
-                    <SelectTrigger id="facades">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">واجهة واحدة</SelectItem>
-                      <SelectItem value="2">واجهتان</SelectItem>
-                      <SelectItem value="3">ثلاث واجهات</SelectItem>
-                      <SelectItem value="4">أربع واجهات</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    id="facades"
+                    name="facades"
+                    type="number"
+                    defaultValue="1"
+                    min="1"
+                    max="4"
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2 space-x-reverse pt-6">
+                  <input
+                    type="checkbox"
+                    id="corner"
+                    name="corner"
+                    className="w-4 h-4"
+                  />
+                  <Label htmlFor="corner">زاوية</Label>
                 </div>
               </div>
             </TabsContent>
@@ -416,10 +379,9 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="distanceToMosque">المسافة من المسجد (متر)</Label>
                   <Input
                     id="distanceToMosque"
+                    name="distanceToMosque"
                     type="number"
-                    value={formData.distanceToMosque}
-                    onChange={(e) => handleChange('distanceToMosque', e.target.value)}
-                    placeholder="200"
+                    placeholder="100"
                   />
                 </div>
 
@@ -427,9 +389,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="distanceToSchool">المسافة من المدرسة (متر)</Label>
                   <Input
                     id="distanceToSchool"
+                    name="distanceToSchool"
                     type="number"
-                    value={formData.distanceToSchool}
-                    onChange={(e) => handleChange('distanceToSchool', e.target.value)}
                     placeholder="500"
                   />
                 </div>
@@ -438,9 +399,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="distanceToHospital">المسافة من المستشفى (كم)</Label>
                   <Input
                     id="distanceToHospital"
+                    name="distanceToHospital"
                     type="number"
-                    value={formData.distanceToHospital}
-                    onChange={(e) => handleChange('distanceToHospital', e.target.value)}
                     placeholder="2"
                   />
                 </div>
@@ -449,20 +409,18 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="distanceToMall">المسافة من المول (كم)</Label>
                   <Input
                     id="distanceToMall"
+                    name="distanceToMall"
                     type="number"
-                    value={formData.distanceToMall}
-                    onChange={(e) => handleChange('distanceToMall', e.target.value)}
                     placeholder="3"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="distanceToMetro">المسافة من محطة المترو (كم)</Label>
+                  <Label htmlFor="distanceToMetro">المسافة من المترو (كم)</Label>
                   <Input
                     id="distanceToMetro"
+                    name="distanceToMetro"
                     type="number"
-                    value={formData.distanceToMetro}
-                    onChange={(e) => handleChange('distanceToMetro', e.target.value)}
                     placeholder="1.5"
                   />
                 </div>
@@ -471,10 +429,9 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="distanceToMainRoad">المسافة من الطريق الرئيسي (متر)</Label>
                   <Input
                     id="distanceToMainRoad"
+                    name="distanceToMainRoad"
                     type="number"
-                    value={formData.distanceToMainRoad}
-                    onChange={(e) => handleChange('distanceToMainRoad', e.target.value)}
-                    placeholder="500"
+                    placeholder="200"
                   />
                 </div>
 
@@ -482,10 +439,9 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="distanceToVision2030">المسافة من مشاريع رؤية 2030 (كم)</Label>
                   <Input
                     id="distanceToVision2030"
+                    name="distanceToVision2030"
                     type="number"
-                    value={formData.distanceToVision2030}
-                    onChange={(e) => handleChange('distanceToVision2030', e.target.value)}
-                    placeholder="15"
+                    placeholder="5"
                   />
                 </div>
               </div>
@@ -498,86 +454,79 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                   <Label htmlFor="parking">عدد مواقف السيارات</Label>
                   <Input
                     id="parking"
+                    name="parking"
                     type="number"
-                    value={formData.parking}
-                    onChange={(e) => handleChange('parking', e.target.value)}
                     placeholder="2"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="currentRent">الإيجار الحالي (ريال/شهر)</Label>
-                  <Input
-                    id="currentRent"
-                    type="number"
-                    value={formData.currentRent}
-                    onChange={(e) => handleChange('currentRent', e.target.value)}
-                    placeholder="3000"
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Checkbox
+                <div className="flex items-center space-x-2 space-x-reverse pt-6">
+                  <input
+                    type="checkbox"
                     id="elevator"
-                    checked={formData.elevator}
-                    onCheckedChange={(checked) => handleChange('elevator', checked)}
+                    name="elevator"
+                    className="w-4 h-4"
                   />
                   <Label htmlFor="elevator">مصعد</Label>
                 </div>
 
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Checkbox
+                <div className="flex items-center space-x-2 space-x-reverse pt-6">
+                  <input
+                    type="checkbox"
                     id="pool"
-                    checked={formData.pool}
-                    onCheckedChange={(checked) => handleChange('pool', checked)}
+                    name="pool"
+                    className="w-4 h-4"
                   />
                   <Label htmlFor="pool">مسبح</Label>
                 </div>
 
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Checkbox
+                <div className="flex items-center space-x-2 space-x-reverse pt-6">
+                  <input
+                    type="checkbox"
                     id="garden"
-                    checked={formData.garden}
-                    onCheckedChange={(checked) => handleChange('garden', checked)}
+                    name="garden"
+                    className="w-4 h-4"
                   />
                   <Label htmlFor="garden">حديقة</Label>
                 </div>
 
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Checkbox
+                <div className="flex items-center space-x-2 space-x-reverse pt-6">
+                  <input
+                    type="checkbox"
                     id="maidRoom"
-                    checked={formData.maidRoom}
-                    onCheckedChange={(checked) => handleChange('maidRoom', checked)}
+                    name="maidRoom"
+                    className="w-4 h-4"
                   />
                   <Label htmlFor="maidRoom">غرفة خادمة</Label>
                 </div>
 
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Checkbox
+                <div className="flex items-center space-x-2 space-x-reverse pt-6">
+                  <input
+                    type="checkbox"
                     id="driverRoom"
-                    checked={formData.driverRoom}
-                    onCheckedChange={(checked) => handleChange('driverRoom', checked)}
+                    name="driverRoom"
+                    className="w-4 h-4"
                   />
                   <Label htmlFor="driverRoom">غرفة سائق</Label>
                 </div>
 
-                <div className="flex items-center space-x-2 space-x-reverse">
-                  <Checkbox
+                <div className="flex items-center space-x-2 space-x-reverse pt-6">
+                  <input
+                    type="checkbox"
                     id="externalMajlis"
-                    checked={formData.externalMajlis}
-                    onCheckedChange={(checked) => handleChange('externalMajlis', checked)}
+                    name="externalMajlis"
+                    className="w-4 h-4"
                   />
                   <Label htmlFor="externalMajlis">مجلس خارجي</Label>
                 </div>
 
                 <div className="col-span-2 space-y-2">
                   <Label htmlFor="notes">ملاحظات إضافية</Label>
-                  <Textarea
+                  <textarea
                     id="notes"
-                    value={formData.notes}
-                    onChange={(e) => handleChange('notes', e.target.value)}
+                    name="notes"
+                    className="w-full px-3 py-2 rounded-md border border-input bg-background min-h-[100px]"
                     placeholder="أي معلومات إضافية تود إضافتها..."
-                    rows={4}
                   />
                 </div>
               </div>
@@ -588,7 +537,7 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading || !formData.city || !formData.area}
+              disabled={isLoading}
             >
               {isLoading ? (
                 <>
