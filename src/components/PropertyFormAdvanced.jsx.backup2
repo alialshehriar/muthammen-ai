@@ -104,7 +104,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="city"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
                     required
-                    onChange={handleChange} value={formData.city || ""}
                   >
                     <option value="">اختر المدينة</option>
                     {cities.map(city => (
@@ -119,7 +118,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     id="district"
                     name="district"
                     placeholder="مثال: الياسمين"
-                    onChange={handleChange} value={formData.district || ""}
                   />
                 </div>
 
@@ -130,7 +128,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="propertyType"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
                     required
-                    onChange={handleChange} value={formData.propertyType || ""}
                   >
                     <option value="">اختر نوع العقار</option>
                     {propertyTypes.map(type => (
@@ -147,7 +144,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     type="number"
                     placeholder="300"
                     required
-                    onChange={handleChange} value={formData.area || ""}
                   />
                 </div>
 
@@ -158,7 +154,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="builtArea"
                     type="number"
                     placeholder="250"
-                    onChange={handleChange} value={formData.builtArea || ""}
                   />
                 </div>
 
@@ -168,7 +163,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     id="age"
                     name="age"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                    onChange={handleChange} value={formData.age || ""}
                   >
                     <option value="">اختر عمر العقار</option>
                     {propertyAges.map(age => (
@@ -183,7 +177,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     id="condition"
                     name="condition"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                    onChange={handleChange} value={formData.condition || ""}
                   >
                     <option value="">اختر الحالة</option>
                     {conditions.map(cond => (
@@ -204,7 +197,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="floors"
                     type="number"
                     placeholder="2"
-                    onChange={handleChange} value={formData.floors || ""}
                   />
                 </div>
 
@@ -215,7 +207,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="bedrooms"
                     type="number"
                     placeholder="4"
-                    onChange={handleChange} value={formData.bedrooms || ""}
                   />
                 </div>
 
@@ -226,7 +217,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="bathrooms"
                     type="number"
                     placeholder="3"
-                    onChange={handleChange} value={formData.bathrooms || ""}
                   />
                 </div>
 
@@ -237,7 +227,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="livingRooms"
                     type="number"
                     placeholder="2"
-                    onChange={handleChange} value={formData.livingRooms || ""}
                   />
                 </div>
 
@@ -248,7 +237,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="majlis"
                     type="number"
                     placeholder="1"
-                    onChange={handleChange} value={formData.majlis || ""}
                   />
                 </div>
 
@@ -258,7 +246,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     id="finishing"
                     name="finishing"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                    onChange={handleChange} value={formData.finishing || ""}
                   >
                     <option value="">اختر نوع التشطيب</option>
                     {finishingTypes.map(type => (
@@ -273,7 +260,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     id="view"
                     name="view"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                    onChange={handleChange} value={formData.view || ""}
                   >
                     <option value="">اختر الإطلالة</option>
                     {views.map(v => (
@@ -288,7 +274,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     id="direction"
                     name="direction"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                    onChange={handleChange} value={formData.direction || ""}
                   >
                     <option value="">اختر الاتجاه</option>
                     {directions.map(dir => (
@@ -303,7 +288,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     id="streetWidth"
                     name="streetWidth"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                    onChange={handleChange} value={formData.streetWidth || ""}
                   >
                     <option value="">اختر عرض الشارع</option>
                     {streetWidths.map(width => (
@@ -318,7 +302,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     id="streetType"
                     name="streetType"
                     className="w-full px-3 py-2 rounded-md border border-input bg-background"
-                    onChange={handleChange} value={formData.streetType || ""}
                   >
                     <option value="">اختر نوع الشارع</option>
                     {streetTypes.map(type => (
@@ -336,7 +319,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     defaultValue="1"
                     min="1"
                     max="4"
-                    onChange={handleChange} value={formData.facades || ""}
                   />
                 </div>
 
@@ -345,7 +327,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     type="checkbox"
                     id="corner"
                     name="corner"
-                    className="w-4 h-4" onChange={handleChange} checked={formData.corner || false} />
+                    className="w-4 h-4"
+                  />
                   <Label htmlFor="corner">زاوية</Label>
                 </div>
               </div>
@@ -361,7 +344,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="distanceToMosque"
                     type="number"
                     placeholder="100"
-                    onChange={handleChange} value={formData.distanceToMosque || ""}
                   />
                 </div>
 
@@ -372,7 +354,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="distanceToSchool"
                     type="number"
                     placeholder="500"
-                    onChange={handleChange} value={formData.distanceToSchool || ""}
                   />
                 </div>
 
@@ -383,7 +364,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="distanceToHospital"
                     type="number"
                     placeholder="2"
-                    onChange={handleChange} value={formData.distanceToHospital || ""}
                   />
                 </div>
 
@@ -394,7 +374,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="distanceToMall"
                     type="number"
                     placeholder="3"
-                    onChange={handleChange} value={formData.distanceToMall || ""}
                   />
                 </div>
 
@@ -405,7 +384,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="distanceToMetro"
                     type="number"
                     placeholder="1.5"
-                    onChange={handleChange} value={formData.distanceToMetro || ""}
                   />
                 </div>
 
@@ -416,7 +394,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="distanceToMainRoad"
                     type="number"
                     placeholder="200"
-                    onChange={handleChange} value={formData.distanceToMainRoad || ""}
                   />
                 </div>
 
@@ -427,7 +404,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="distanceToVision2030"
                     type="number"
                     placeholder="5"
-                    onChange={handleChange} value={formData.distanceToVision2030 || ""}
                   />
                 </div>
               </div>
@@ -443,7 +419,6 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     name="parking"
                     type="number"
                     placeholder="2"
-                    onChange={handleChange} value={formData.parking || ""}
                   />
                 </div>
 
@@ -452,7 +427,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     type="checkbox"
                     id="elevator"
                     name="elevator"
-                    className="w-4 h-4" onChange={handleChange} checked={formData.elevator || false} />
+                    className="w-4 h-4"
+                  />
                   <Label htmlFor="elevator">مصعد</Label>
                 </div>
 
@@ -461,7 +437,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     type="checkbox"
                     id="pool"
                     name="pool"
-                    className="w-4 h-4" onChange={handleChange} checked={formData.pool || false} />
+                    className="w-4 h-4"
+                  />
                   <Label htmlFor="pool">مسبح</Label>
                 </div>
 
@@ -470,7 +447,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     type="checkbox"
                     id="garden"
                     name="garden"
-                    className="w-4 h-4" onChange={handleChange} checked={formData.garden || false} />
+                    className="w-4 h-4"
+                  />
                   <Label htmlFor="garden">حديقة</Label>
                 </div>
 
@@ -479,7 +457,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     type="checkbox"
                     id="maidRoom"
                     name="maidRoom"
-                    className="w-4 h-4" onChange={handleChange} checked={formData.maidRoom || false} />
+                    className="w-4 h-4"
+                  />
                   <Label htmlFor="maidRoom">غرفة خادمة</Label>
                 </div>
 
@@ -488,7 +467,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     type="checkbox"
                     id="driverRoom"
                     name="driverRoom"
-                    className="w-4 h-4" onChange={handleChange} checked={formData.driverRoom || false} />
+                    className="w-4 h-4"
+                  />
                   <Label htmlFor="driverRoom">غرفة سائق</Label>
                 </div>
 
@@ -497,7 +477,8 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
                     type="checkbox"
                     id="externalMajlis"
                     name="externalMajlis"
-                    className="w-4 h-4" onChange={handleChange} checked={formData.externalMajlis || false} />
+                    className="w-4 h-4"
+                  />
                   <Label htmlFor="externalMajlis">مجلس خارجي</Label>
                 </div>
 
