@@ -21,7 +21,7 @@ export default async function handler(req, res) {
 
   try {
     // قراءة المفتاح من البيئة
-    const apiKey = process.env.AGENT_PROJECT_KEY || process.env.OPENAI_API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY || process.env.AGENT_PROJECT_KEY;
     
     if (!apiKey) {
       console.warn('⚠️ No API key configured');
