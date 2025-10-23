@@ -43,7 +43,21 @@ export default function PropertyForm({ onSubmit, isLoading }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // قراءة القيم من DOM مباشرة كـ fallback
+    const form = e.target;
+    const areaInput = form.querySelector('input[placeholder="مثال: 300"]');
+    const citySelect = form.querySelectorAll('select')[0];
+    const districtInput = form.querySelector('input[placeholder="مثال: الياسمين"]');
+    
+    const finalData = {
+      ...formData,
+      area: formData.area || (areaInput ? areaInput.value : ''),
+      city: formData.city || (citySelect ? citySelect.value : ''),
+      district: formData.district || (districtInput ? districtInput.value : '')
+    };
+    
+    onSubmit(finalData);
   };
 
   const filledFieldsCount = Object.keys(formData).filter(key => {
