@@ -78,8 +78,15 @@ function App() {
 
       // اختيار المحرك (GPT أو المحلي)
       if (useGPT && API_CONFIG.enabled) {
-        // استخدام GPT API
-        evaluation = await evaluateWithGPT(formData);
+        // استخدام GPT API عبر backend
+        const response = await fetch('/api/agent/score-nqs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (!data.ok) throw new Error(data.error || 'فشل التقييم');
+        evaluation = await calculatePropertyValue({ ...formData, nqs: data.nqs });
       } else {
         // استخدام المحرك المحلي
         evaluation = await calculatePropertyValue(formData);
