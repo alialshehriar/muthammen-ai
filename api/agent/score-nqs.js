@@ -21,11 +21,11 @@ export default async function handler(req, res) {
   }
 
   try {
-    // قراءة المفتاح من البيئة
-    const apiKey = process.env.AGENT_PROJECT_KEY;
+    // قراءة المفتاح من البيئة (OPENAI_API_KEY أولاً، ثم AGENT_PROJECT_KEY كـ fallback)
+    const apiKey = process.env.OPENAI_API_KEY || process.env.AGENT_PROJECT_KEY;
     
     if (!apiKey) {
-      console.warn('⚠️ AGENT_PROJECT_KEY not configured');
+      console.warn('⚠️ OPENAI_API_KEY not configured');
       return res.status(200).json({ 
         ok: false, 
         error: 'Agent not configured',
