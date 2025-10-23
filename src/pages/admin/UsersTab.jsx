@@ -17,20 +17,20 @@ const UsersTab = ({ loading }) => {
   const [userDetails, setUserDetails] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  // تحميل المستخدمين
+  // تحميل جميع الحسابات (waitlist + users)
   const loadUsers = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/admin/users?limit=100&search=${searchTerm}`);
+      const response = await fetch('/api/admin/accounts');
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          setUsers(data.data.users || []);
+          setUsers(data.data.accounts || []);
           setUserStats(data.data.stats || null);
         }
       }
     } catch (error) {
-      console.error('Error loading users:', error);
+      console.error('Error loading accounts:', error);
     } finally {
       setIsLoading(false);
     }
@@ -200,6 +200,7 @@ const UsersTab = ({ loading }) => {
               <thead>
                 <tr className="border-b bg-gray-50">
                   <th className="text-right p-3 font-bold">ID</th>
+                  <th className="text-right p-3 font-bold">النوع</th>
                   <th className="text-right p-3 font-bold">الاسم</th>
                   <th className="text-right p-3 font-bold">البريد الإلكتروني</th>
                   <th className="text-right p-3 font-bold">الهاتف</th>
@@ -217,6 +218,11 @@ const UsersTab = ({ loading }) => {
                 {users.map((user) => (
                   <tr key={user.id} className="border-b hover:bg-gray-50">
                     <td className="p-3 font-mono text-sm">{user.id}</td>
+                    <td className="p-3">
+                      <Badge variant={user.account_type === 'user' ? 'default' : 'secondary'}>
+                        {user.account_type === 'user' ? 'مسجل' : 'قائمة انتظار'}
+                      </Badge>
+                    </td>
                     <td className="p-3 font-semibold">{user.name || '-'}</td>
                     <td className="p-3">
                       {user.email ? (
@@ -236,23 +242,23 @@ const UsersTab = ({ loading }) => {
                     </td>
                     <td className="p-3">
                       <Badge variant="outline" className="font-mono">
-                        {user.referral_code}
+                        {user.referral_code || user.ref_code || '-'}
                       </Badge>
                     </td>
                     <td className="p-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <FileText className="w-4 h-4 text-muted-foreground" />
-                        <span>{user.total_evaluations}</span>
+                        <span>{user.total_evaluations || 0}</span>
                       </div>
                     </td>
                     <td className="p-3 text-center">
                       <div className="flex items-center justify-center gap-1">
                         <Gift className="w-4 h-4 text-muted-foreground" />
-                        <span>{user.total_referrals}</span>
+                        <span>{user.referrals_count || user.total_referrals || 0}</span>
                       </div>
                     </td>
                     <td className="p-3 text-center">
-                      <Badge variant="secondary">{user.total_points}</Badge>
+                      <Badge variant="secondary">{user.total_points || 0}</Badge>
                     </td>
                     <td className="p-3">
                       <Badge 
@@ -347,8 +353,13 @@ export default UsersTab;
             {/* Header */}
             <div className="sticky top-0 bg-white border-b p-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold">تفاصيل المستخدم</h2>
-                <p className="text-sm text-muted-foreground">
+                <h2 className="text-2xl font-bold">
+                جميع الحسابات ({users.length})
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                {userStats?.overview?.total_waitlist || 0} في قائمة الانتظار • 
+                {userStats?.overview?.total_users || 0} مستخدم مسجل
+              </p>             <p className="text-sm text-muted-foreground">
                   {userDetails.user.name || userDetails.user.email || userDetails.user.phone}
                 </p>
               </div>
