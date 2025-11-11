@@ -495,18 +495,18 @@ const UsersTab = ({ loading }) => {
                         </tr>
                       </thead>
                       <tbody>
-                        {userDetails.evaluations.map((eval) => (
-                          <tr key={eval.id} className="border-b">
-                            <td className="p-2 font-mono">{eval.id}</td>
-                            <td className="p-2">{eval.city}</td>
-                            <td className="p-2">{eval.district}</td>
-                            <td className="p-2">{eval.property_type}</td>
-                            <td className="p-2">{eval.area} م²</td>
+                        {userDetails.evaluations.map((evaluation) => (
+                          <tr key={evaluation.id} className="border-b">
+                            <td className="p-2 font-mono">{evaluation.id}</td>
+                            <td className="p-2">{evaluation.city}</td>
+                            <td className="p-2">{evaluation.district}</td>
+                            <td className="p-2">{evaluation.property_type}</td>
+                            <td className="p-2">{evaluation.area} م²</td>
                             <td className="p-2 font-semibold">
-                              {parseFloat(eval.estimated_value).toLocaleString('ar-SA')} ر.س
+                              {parseFloat(evaluation.estimated_value).toLocaleString('ar-SA')} ر.س
                             </td>
                             <td className="p-2">
-                              {new Date(eval.created_at).toLocaleDateString('ar-SA')}
+                              {new Date(evaluation.created_at).toLocaleDateString('ar-SA')}
                             </td>
                           </tr>
                         ))}
