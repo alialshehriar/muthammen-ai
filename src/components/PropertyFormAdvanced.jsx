@@ -69,7 +69,7 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
       }
     }
     
-    console.log('📤 إرسال بيانات النموذج المتقدم (من DOM):', collectedData);
+    console.log('🔥 VERSION 2.0 - إرسال بيانات النموذج المتقدم (من DOM):', JSON.stringify(collectedData));
     
     // Validation
     if (!collectedData.city) {
