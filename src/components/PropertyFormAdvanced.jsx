@@ -64,6 +64,7 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
           console.log(`🎯 About to add ${element.name} with value:`, element.value);
           collectedData[element.name] = element.value;
           console.log(`✅ Added ${element.name} (value):`, collectedData[element.name]);
+          console.log(`📦 collectedData after adding ${element.name}:`, JSON.stringify(collectedData));
         }
       }
     }
