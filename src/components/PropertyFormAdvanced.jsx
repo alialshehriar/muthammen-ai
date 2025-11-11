@@ -43,25 +43,45 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    console.log('📤 إرسال بيانات النموذج المتقدم:', formData);
+    // جمع البيانات مباشرة من DOM لضمان الحصول على أحدث القيم
+    const form = formRef.current;
+    const formElements = form.elements;
+    
+    const collectedData = {};
+    
+    // جمع جميع الحقول من النموذج
+    for (let i = 0; i < formElements.length; i++) {
+      const element = formElements[i];
+      if (element.name) {
+        if (element.type === 'checkbox') {
+          collectedData[element.name] = element.checked;
+        } else if (element.type === 'number') {
+          collectedData[element.name] = element.value === '' ? '' : Number(element.value);
+        } else if (element.value) {
+          collectedData[element.name] = element.value;
+        }
+      }
+    }
+    
+    console.log('📤 إرسال بيانات النموذج المتقدم (من DOM):', collectedData);
     
     // Validation
-    if (!formData.city) {
+    if (!collectedData.city) {
       alert('يرجى اختيار المدينة');
       return;
     }
     
-    if (!formData.propertyType) {
+    if (!collectedData.propertyType) {
       alert('يرجى اختيار نوع العقار');
       return;
     }
     
-    if (!formData.area) {
+    if (!collectedData.area) {
       alert('يرجى إدخال مساحة الأرض');
       return;
     }
     
-    onSubmit(formData);
+    onSubmit(collectedData);
   };
 
   const cities = [
