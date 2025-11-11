@@ -53,12 +53,17 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
     for (let i = 0; i < formElements.length; i++) {
       const element = formElements[i];
       if (element.name) {
+        console.log(`🔧 Processing element: name="${element.name}", type="${element.type}", value="${element.value}"`);
         if (element.type === 'checkbox') {
           collectedData[element.name] = element.checked;
+          console.log(`✅ Added ${element.name} (checkbox):`, collectedData[element.name]);
         } else if (element.type === 'number') {
           collectedData[element.name] = element.value === '' ? '' : Number(element.value);
+          console.log(`✅ Added ${element.name} (number):`, collectedData[element.name]);
         } else if (element.value) {
+          console.log(`🎯 About to add ${element.name} with value:`, element.value);
           collectedData[element.name] = element.value;
+          console.log(`✅ Added ${element.name} (value):`, collectedData[element.name]);
         }
       }
     }
