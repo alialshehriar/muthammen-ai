@@ -106,7 +106,7 @@ function App() {
   }, []);
 
   const handleEvaluate = async (formData) => {
-    console.log('🚀 handleEvaluate تم استدعاؤه بالبيانات:', JSON.stringify(formData));
+    console.log('🚀 handleEvaluate تم استدعاؤه بالبيانات:', formData);
     
     // Check evaluation limit
     if (!canEvaluate && !isLoggedIn) {

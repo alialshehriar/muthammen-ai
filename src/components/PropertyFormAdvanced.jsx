@@ -28,16 +28,10 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
       newValue = value;
     }
     
-    console.log(`🔄 تحديث حقل: ${name} = ${newValue} (type: ${type})`);
-    
-    setFormData(prev => {
-      const updated = {
-        ...prev,
-        [name]: newValue
-      };
-      console.log('📊 بيانات النموذج المحدثة:', updated);
-      return updated;
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: newValue
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -53,23 +47,17 @@ export default function PropertyFormAdvanced({ onSubmit, isLoading }) {
     for (let i = 0; i < formElements.length; i++) {
       const element = formElements[i];
       if (element.name) {
-        console.log(`🔧 Processing element: name="${element.name}", type="${element.type}", value="${element.value}"`);
         if (element.type === 'checkbox') {
           collectedData[element.name] = element.checked;
-          console.log(`✅ Added ${element.name} (checkbox):`, collectedData[element.name]);
         } else if (element.type === 'number') {
           collectedData[element.name] = element.value === '' ? '' : Number(element.value);
-          console.log(`✅ Added ${element.name} (number):`, collectedData[element.name]);
         } else if (element.value) {
-          console.log(`🎯 About to add ${element.name} with value:`, element.value);
           collectedData[element.name] = element.value;
-          console.log(`✅ Added ${element.name} (value):`, collectedData[element.name]);
-          console.log(`📦 collectedData after adding ${element.name}:`, JSON.stringify(collectedData));
         }
       }
     }
     
-    console.log('🔥 VERSION 2.0 - إرسال بيانات النموذج المتقدم (من DOM):', JSON.stringify(collectedData));
+    console.log('📤 إرسال بيانات النموذج المتقدم:', collectedData);
     
     // Validation
     if (!collectedData.city) {
